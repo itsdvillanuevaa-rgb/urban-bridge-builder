@@ -9,12 +9,25 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as SplashRouteImport } from './routes/splash'
+import { Route as RutasRouteImport } from './routes/rutas'
 import { Route as ReportarRouteImport } from './routes/reportar'
 import { Route as PerfilRouteImport } from './routes/perfil'
-import { Route as InteligenciaRouteImport } from './routes/inteligencia'
-import { Route as ComerciosRouteImport } from './routes/comercios'
+import { Route as OnboardingRouteImport } from './routes/onboarding'
+import { Route as EncuestaRouteImport } from './routes/encuesta'
+import { Route as AlertasRouteImport } from './routes/alertas'
 import { Route as IndexRouteImport } from './routes/index'
 
+const SplashRoute = SplashRouteImport.update({
+  id: '/splash',
+  path: '/splash',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RutasRoute = RutasRouteImport.update({
+  id: '/rutas',
+  path: '/rutas',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ReportarRoute = ReportarRouteImport.update({
   id: '/reportar',
   path: '/reportar',
@@ -25,14 +38,19 @@ const PerfilRoute = PerfilRouteImport.update({
   path: '/perfil',
   getParentRoute: () => rootRouteImport,
 } as any)
-const InteligenciaRoute = InteligenciaRouteImport.update({
-  id: '/inteligencia',
-  path: '/inteligencia',
+const OnboardingRoute = OnboardingRouteImport.update({
+  id: '/onboarding',
+  path: '/onboarding',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ComerciosRoute = ComerciosRouteImport.update({
-  id: '/comercios',
-  path: '/comercios',
+const EncuestaRoute = EncuestaRouteImport.update({
+  id: '/encuesta',
+  path: '/encuesta',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AlertasRoute = AlertasRouteImport.update({
+  id: '/alertas',
+  path: '/alertas',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -43,50 +61,95 @@ const IndexRoute = IndexRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/comercios': typeof ComerciosRoute
-  '/inteligencia': typeof InteligenciaRoute
+  '/alertas': typeof AlertasRoute
+  '/encuesta': typeof EncuestaRoute
+  '/onboarding': typeof OnboardingRoute
   '/perfil': typeof PerfilRoute
   '/reportar': typeof ReportarRoute
+  '/rutas': typeof RutasRoute
+  '/splash': typeof SplashRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/comercios': typeof ComerciosRoute
-  '/inteligencia': typeof InteligenciaRoute
+  '/alertas': typeof AlertasRoute
+  '/encuesta': typeof EncuestaRoute
+  '/onboarding': typeof OnboardingRoute
   '/perfil': typeof PerfilRoute
   '/reportar': typeof ReportarRoute
+  '/rutas': typeof RutasRoute
+  '/splash': typeof SplashRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/comercios': typeof ComerciosRoute
-  '/inteligencia': typeof InteligenciaRoute
+  '/alertas': typeof AlertasRoute
+  '/encuesta': typeof EncuestaRoute
+  '/onboarding': typeof OnboardingRoute
   '/perfil': typeof PerfilRoute
   '/reportar': typeof ReportarRoute
+  '/rutas': typeof RutasRoute
+  '/splash': typeof SplashRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/comercios' | '/inteligencia' | '/perfil' | '/reportar'
+  fullPaths:
+    | '/'
+    | '/alertas'
+    | '/encuesta'
+    | '/onboarding'
+    | '/perfil'
+    | '/reportar'
+    | '/rutas'
+    | '/splash'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/comercios' | '/inteligencia' | '/perfil' | '/reportar'
+  to:
+    | '/'
+    | '/alertas'
+    | '/encuesta'
+    | '/onboarding'
+    | '/perfil'
+    | '/reportar'
+    | '/rutas'
+    | '/splash'
   id:
     | '__root__'
     | '/'
-    | '/comercios'
-    | '/inteligencia'
+    | '/alertas'
+    | '/encuesta'
+    | '/onboarding'
     | '/perfil'
     | '/reportar'
+    | '/rutas'
+    | '/splash'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  ComerciosRoute: typeof ComerciosRoute
-  InteligenciaRoute: typeof InteligenciaRoute
+  AlertasRoute: typeof AlertasRoute
+  EncuestaRoute: typeof EncuestaRoute
+  OnboardingRoute: typeof OnboardingRoute
   PerfilRoute: typeof PerfilRoute
   ReportarRoute: typeof ReportarRoute
+  RutasRoute: typeof RutasRoute
+  SplashRoute: typeof SplashRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/splash': {
+      id: '/splash'
+      path: '/splash'
+      fullPath: '/splash'
+      preLoaderRoute: typeof SplashRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/rutas': {
+      id: '/rutas'
+      path: '/rutas'
+      fullPath: '/rutas'
+      preLoaderRoute: typeof RutasRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/reportar': {
       id: '/reportar'
       path: '/reportar'
@@ -101,18 +164,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PerfilRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/inteligencia': {
-      id: '/inteligencia'
-      path: '/inteligencia'
-      fullPath: '/inteligencia'
-      preLoaderRoute: typeof InteligenciaRouteImport
+    '/onboarding': {
+      id: '/onboarding'
+      path: '/onboarding'
+      fullPath: '/onboarding'
+      preLoaderRoute: typeof OnboardingRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/comercios': {
-      id: '/comercios'
-      path: '/comercios'
-      fullPath: '/comercios'
-      preLoaderRoute: typeof ComerciosRouteImport
+    '/encuesta': {
+      id: '/encuesta'
+      path: '/encuesta'
+      fullPath: '/encuesta'
+      preLoaderRoute: typeof EncuestaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/alertas': {
+      id: '/alertas'
+      path: '/alertas'
+      fullPath: '/alertas'
+      preLoaderRoute: typeof AlertasRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -127,10 +197,13 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  ComerciosRoute: ComerciosRoute,
-  InteligenciaRoute: InteligenciaRoute,
+  AlertasRoute: AlertasRoute,
+  EncuestaRoute: EncuestaRoute,
+  OnboardingRoute: OnboardingRoute,
   PerfilRoute: PerfilRoute,
   ReportarRoute: ReportarRoute,
+  RutasRoute: RutasRoute,
+  SplashRoute: SplashRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

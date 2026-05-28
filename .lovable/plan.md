@@ -1,64 +1,95 @@
-# Acento Accesible — Prototipo navegable
 
-Prototipo de alta fidelidad con datos simulados (sin backend) basado en la dirección "Civic Feed": tipografía Public Sans, color brand teal `#0d9488`, superficies blancas con `ring-1 ring-black/5` y radios generosos (20-24px).
+# Rediseño Mobile-First: Acento Accesible
 
-## Arquitectura de rutas (TanStack Start)
+Convertir el prototipo en una app nativa para smartphone (iOS/Android style), enfocada en accesibilidad para adultos mayores y personas con discapacidad motriz. Se eliminan vistas desktop, dashboard administrativo y landing.
 
+## Paleta y tipografía (ajuste a src/styles.css)
+
+- Fondo: blanco roto `oklch(0.99 0.003 240)` y grises claros.
+- Brand: azul petróleo `#0e7490` (oklch ~0.55 0.09 220).
+- Acento: verde accesible `#16a34a` (oklch ~0.66 0.16 152).
+- Alerta: ámbar suave; Error: rojo desaturado.
+- Tipografía: Public Sans, tamaños base aumentados (body 17px, títulos 28–32px, botones 17px medium).
+- Radios grandes (rounded-2xl/3xl), sombras suaves, mucho whitespace.
+- Targets táctiles mínimos 48×48px; inputs altura 56px; CTA principal 56px.
+
+## Arquitectura de rutas (src/routes/)
+
+Reemplaza la estructura actual. Todo se renderiza dentro de un "phone frame" centrado en desktop pero ocupa toda la pantalla en móvil real.
+
+```text
+__root.tsx            shell con frame móvil + bottom nav condicional
+splash.tsx            / -> redirige aquí en primera carga (logo animado)
+onboarding.tsx        3 pasos con paginador
+encuesta.tsx          preferencias de accesibilidad (silla, bastón, baja visión, etc.)
+index.tsx             /mapa - pantalla principal con mapa full-screen
+reportar.tsx          flujo de reporte (foto + ubicación + categoría)
+rutas.tsx             buscar ruta accesible (origen/destino, resultados)
+alertas.tsx           alertas cercanas (lista + badges severidad)
+perfil.tsx            perfil + historial de reportes + insignias
 ```
-src/routes/
-  __root.tsx              Layout global: nav superior con badge "CDMX • En vivo" y avatar
-  index.tsx               Mapa Ciudadano (vista principal del feed cívico)
-  reportar.tsx            Flujo de Reporte Ciudadano (módulo 2)
-  comercios.tsx           Directorio Sello de Ciudad Inclusiva (módulo 3)
-  inteligencia.tsx        Dashboard de Inteligencia Urbana (módulo 4)
-  perfil.tsx              Perfil con gamificación (módulo 5)
-```
 
-Cada ruta con su propio `head()` (title, description, og). Navegación principal en el header: "Mapa Ciudadano" e "Inteligencia Urbana" + links secundarios a Reportar, Comercios, Perfil.
+Se eliminan: `comercios.tsx`, `inteligencia.tsx` (dashboard).
 
-## Módulos
+Flujo de primer uso: splash → onboarding → encuesta → mapa. Persistencia con `localStorage` (`aa.onboarded`, `aa.profile`).
 
-**1. Motor de Navegación (`/`)** — Layout 4/8 columnas del prototipo aprobado:
-- Panel izquierdo: buscador Origen/Destino, botón "Buscar ruta accesible", feed "Reportes Cercanos" en vivo (obras, rampas, elevadores) con timestamps y badges de verificación.
-- Panel derecho: mapa SVG estilizado (generado con `imagegen`) con marcadores teal (ruta) y ámbar (obstáculos), overlays flotantes con Índice de Accesibilidad 84/100, botones Capas/Tráfico.
-- Debajo: 2 tarjetas de comercios destacados + grid de 4 KPIs (Km accesibles, Reportes resueltos, Puntos de apoyo, Nivel de confianza).
+## Componentes clave (src/components/)
 
-**2. Reporte Ciudadano (`/reportar`)** — Wizard de 3 pasos:
-- Paso 1: Categoría (banqueta bloqueada, rampa inexistente, obra, punto de descanso) con iconos grandes y accesibles.
-- Paso 2: Geolocalización (mini-mapa con pin arrastrable) + captura de foto (drop zone simulado).
-- Paso 3: Confirmación con vista previa y mensaje de validación cruzada ("Tu reporte ganará peso cuando otros usuarios lo confirmen").
+- `PhoneFrame`: contenedor que en `md+` muestra el contenido dentro de un marco de teléfono centrado; en móvil ocupa 100dvh.
+- `BottomNav`: 5 tabs fijos (Mapa, Reportar, Rutas, Alertas, Perfil), iconos 24px + label 11px, alto 72px + safe-area-inset-bottom, el botón central "Reportar" elevado y destacado (estilo Uber/Instagram).
+- `TopBar`: barra superior translúcida con título contextual y botón retroceso.
+- `FloatingCard`: tarjeta flotante sobre el mapa (bottom sheet estático) con handle, padding generoso.
+- `BottomSheet`: hoja deslizable con 2 snap points (peek 30% / expanded 75%).
+- `BigButton`: CTA primario 56px, alto contraste, ícono opcional izquierdo.
+- `SearchPill`: input redondeado tipo Apple Maps con ícono lupa y micrófono.
+- `AlertCard`, `ReportCard`, `RouteCard`: tarjetas grandes con jerarquía clara.
+- `Stepper`: indicador de pasos para onboarding/reportar.
+- `MapCanvas`: reemplaza `MapShell`, ocupa full-screen, con marcadores grandes (accesible / barrera / alerta) y FAB de "centrar en mi ubicación".
 
-**3. Ecosistema Comercial (`/comercios`)** — Grid de tarjetas con:
-- Filtros por tipo (restaurantes, clínicas, comercios) y nivel de sello (Oro, Plata, Bronce).
-- Cada tarjeta: foto, nombre, badge "Sello Ciudad Inclusiva", índice 0-100, características (rampa, baño accesible, menú braille, personal capacitado).
-- 8-10 negocios simulados de CDMX.
+Componentes a eliminar: `site-header.tsx`, `mobile-tabbar.tsx` (reemplazado), `kpi-card.tsx`, `business-card.tsx`.
 
-**4. Inteligencia Urbana (`/inteligencia`)** — Dashboard institucional:
-- Header con selector de alcaldía.
-- 4 KPIs grandes: barreras detectadas, reducción trimestral, tiempo medio de resolución, cobertura ciudadana.
-- Mapa de calor (SVG/imagen) con clusters de obstáculos.
-- Tabla de zonas prioritarias (acceso a hospitales/servicios) con score y CTA "Priorizar mantenimiento".
-- Gráfica de tendencia (Recharts) de accesibilidad por trimestre.
+## Pantallas — detalle
 
-**5. Perfil y Gamificación (`/perfil`)** — Vista personal:
-- Tarjeta de usuario: avatar, nombre, rol ("Auditor verificado · Nivel 4").
-- Métricas de impacto: reportes hechos, rutas optimizadas, usuarios ayudados.
-- Insignias desbloqueadas y barra de progreso al siguiente nivel.
-- Timeline de últimos reportes con estado (validado, en revisión, resuelto).
+1. **Splash** (`/splash`): fondo blanco, logo "Acento Accesible" (símbolo + wordmark), tagline corta, transición automática a 1.5s. Genero ilustración del logo.
+2. **Onboarding** (`/onboarding`): 3 slides — "Rutas que respetan tu paso", "Reporta barreras en segundos", "Comunidad que valida". Cada slide ilustración + título grande + texto corto. Botones "Saltar" / "Siguiente"; el último dice "Comenzar".
+3. **Encuesta** (`/encuesta`): preguntas con chips grandes seleccionables — "¿Cómo te mueves?" (silla manual, silla eléctrica, andador, bastón, sin ayuda), "¿Qué evitar?" (escaleras, pendientes, banquetas rotas). CTA "Personalizar mi mapa".
+4. **Mapa** (`/`): mapa ocupa 100% de la pantalla. Top: search pill flotante "¿A dónde vamos?" + chip de filtro accesibilidad. Bottom sheet peek con "Cerca de ti" (3 alertas próximas) + CTA grande "Buscar ruta accesible". FAB derecha: ubicación. Marcadores teal/ámbar/verde.
+5. **Reportar** (`/reportar`): 3 pasos — (a) elegir categoría con grid 2×3 de iconos grandes (rampa faltante, banqueta rota, obstáculo, semáforo, baño, otro), (b) confirmar ubicación en mini-mapa + agregar foto (placeholder cámara), (c) confirmación con animación check y "Tu reporte ayudará a +12 personas hoy".
+6. **Rutas** (`/rutas`): inputs origen/destino apilados, lista de rutas resultantes con score de accesibilidad, tiempo, # rampas, pendiente. Tap → detalle con paso a paso accesible.
+7. **Alertas** (`/alertas`): lista cronológica de alertas cercanas con severidad por color, distancia, tiempo. Pull-to-refresh visual.
+8. **Perfil** (`/perfil`): avatar grande + nombre + nivel (Colaborador, Validador, Guardián). Barra de progreso. Sección "Mi impacto" (reportes, rutas optimizadas, personas ayudadas). Lista "Mis reportes" (historial con estado validado/pendiente). Acceso a "Mis preferencias" (re-abre encuesta).
 
-## Detalles técnicos
+## Patrones de accesibilidad reforzados
 
-- **Design tokens** en `src/styles.css`: `--brand: oklch(...)` (teal `#0d9488`), `--surface`, `--ui-text`, `--ui-muted`. Tipografía Public Sans vía `@fontsource/public-sans` en `src/main.tsx`. Animación `pulse-soft` para badges en vivo.
-- **Imágenes**: 1 mapa estilizado, 1 mapa de calor, ~4-6 storefronts y avatares via `imagegen` (fast tier) guardadas en `src/assets/`.
-- **Datos simulados**: archivo `src/data/mock.ts` con arrays de reportes, comercios, KPIs y perfil. Sin Lovable Cloud (es solo prototipo visual).
-- **Componentes reutilizables** en `src/components/`: `Header`, `LiveBadge`, `ReportCard`, `BusinessCard`, `KpiCard`, `MapShell`, `StepIndicator`.
-- **Accesibilidad**: contraste WCAG AA, foco visible, `aria-label` en botones-icono, jerarquía de headings correcta por ruta, `lang="es"`.
-- **Responsive**: mobile-first con la barra inferior fija del prototipo en `< md`.
+- Contraste AAA en CTAs principales.
+- Estados `focus-visible` con outline azul petróleo 3px.
+- Soporte `prefers-reduced-motion`.
+- Texto escalable (uso de rem); botones nunca por debajo de 48px.
+- Labels visibles + `aria-label` en iconos.
+- Bottom nav con `aria-current` y labels siempre visibles (no solo iconos).
 
-## Fuera de alcance (prototipo)
+## Assets a generar (imagegen)
 
-- Mapas reales (Google Maps / Mapbox) — usamos imagen estilizada.
-- Backend, auth, persistencia de reportes.
-- Ruteo real con pesos dinámicos — se muestra como UI estática.
+- Logo "Acento Accesible" (símbolo wayfinding + tipografía).
+- 3 ilustraciones de onboarding (estilo plano, paleta de marca).
+- Fondo de mapa estilizado (Apple Maps-like, tonos crema/teal) — reemplaza `map-city.jpg`.
+- Avatar por defecto.
 
-Si más tarde quieres convertirlo en producto real, los siguientes pasos serían activar Lovable Cloud (tablas de reportes/comercios/usuarios + RLS) y conectar Google Maps para mapa y geocoding.
+## Cambios técnicos puntuales
+
+- `styles.css`: nuevos tokens, tamaños base, utilidad `.safe-bottom` (`padding-bottom: env(safe-area-inset-bottom)`), animación de check y fade de splash.
+- `__root.tsx`: envolver Outlet en `PhoneFrame`, mover `<main>` ahí, ocultar `BottomNav` en `/splash`, `/onboarding`, `/encuesta`.
+- `routeTree.gen.ts`: regenerado automáticamente al crear/borrar rutas.
+- Eliminar imports y assets de comercios/inteligencia.
+- Mock data ajustado: quitar `businesses`, agregar `alerts` y `routes`.
+
+## Fuera de alcance
+
+- Mapas reales (Mapbox/Leaflet) — se mantiene imagen estilizada + SVG markers.
+- Cámara real / geolocalización real — se simulan.
+- Backend, auth, persistencia más allá de `localStorage`.
+- Modo oscuro completo (se deja base, no se pule).
+
+## Resultado esperado
+
+Una experiencia que se siente como una app nativa: splash → onboarding → encuesta → mapa full-screen con bottom nav de 5 tabs, todas las pantallas con tarjetas flotantes, tipografía grande y CTAs grandes, lista para presentar como prototipo de App Store/Play Store.

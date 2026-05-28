@@ -9,21 +9,21 @@ import {
 } from "@tanstack/react-router";
 
 import appCss from "../styles.css?url";
-import { SiteHeader } from "@/components/site-header";
-import { MobileTabbar } from "@/components/mobile-tabbar";
+import { PhoneFrame } from "@/components/phone-frame";
+import { BottomNav } from "@/components/bottom-nav";
 
 function NotFoundComponent() {
   return (
-    <div className="flex min-h-dvh items-center justify-center bg-surface px-4">
-      <div className="max-w-md text-center">
-        <p className="text-xs font-semibold text-brand uppercase tracking-widest">Error 404</p>
-        <h1 className="mt-2 text-4xl font-semibold tracking-tight text-foreground">Esta calle no existe</h1>
-        <p className="mt-3 text-sm text-muted-foreground">
-          La página que buscas no está en el mapa. Regresa al inicio para seguir explorando rutas accesibles.
+    <div className="flex min-h-dvh items-center justify-center bg-background px-6">
+      <div className="max-w-sm text-center">
+        <p className="text-sm font-semibold text-brand uppercase tracking-widest">Error 404</p>
+        <h1 className="mt-2 text-3xl font-semibold tracking-tight">Esta calle no existe</h1>
+        <p className="mt-3 text-base text-muted-foreground">
+          La página que buscas no está en el mapa.
         </p>
         <Link
           to="/"
-          className="mt-6 inline-flex items-center justify-center rounded-lg bg-brand px-4 py-2 text-sm font-medium text-brand-foreground hover:opacity-90 transition-opacity"
+          className="mt-6 inline-flex items-center justify-center h-12 px-6 rounded-2xl bg-brand text-brand-foreground font-semibold"
         >
           Ir al mapa
         </Link>
@@ -36,20 +36,18 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
   console.error(error);
   const router = useRouter();
   return (
-    <div className="flex min-h-dvh items-center justify-center bg-surface px-4">
-      <div className="max-w-md text-center">
-        <h1 className="text-xl font-semibold tracking-tight text-foreground">No pudimos cargar esta vista</h1>
-        <p className="mt-2 text-sm text-muted-foreground">
-          Algo falló de nuestro lado. Intenta de nuevo o regresa al mapa.
-        </p>
+    <div className="flex min-h-dvh items-center justify-center bg-background px-6">
+      <div className="max-w-sm text-center">
+        <h1 className="text-xl font-semibold">No pudimos cargar esta vista</h1>
+        <p className="mt-2 text-base text-muted-foreground">Intenta de nuevo o regresa al mapa.</p>
         <div className="mt-6 flex flex-wrap justify-center gap-2">
           <button
             onClick={() => { router.invalidate(); reset(); }}
-            className="rounded-lg bg-brand px-4 py-2 text-sm font-medium text-brand-foreground hover:opacity-90 transition-opacity"
+            className="h-12 px-6 rounded-2xl bg-brand text-brand-foreground font-semibold"
           >
             Reintentar
           </button>
-          <a href="/" className="rounded-lg border border-border bg-card px-4 py-2 text-sm font-medium hover:bg-muted transition-colors">
+          <a href="/" className="h-12 px-6 grid place-items-center rounded-2xl bg-muted font-semibold">
             Ir al mapa
           </a>
         </div>
@@ -62,12 +60,13 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
   head: () => ({
     meta: [
       { charSet: "utf-8" },
-      { name: "viewport", content: "width=device-width, initial-scale=1" },
+      { name: "viewport", content: "width=device-width, initial-scale=1, viewport-fit=cover" },
+      { name: "theme-color", content: "#0e7490" },
       { title: "Acento Accesible — Movilidad urbana inclusiva" },
       {
         name: "description",
         content:
-          "Plataforma ciudadana de rutas accesibles, reportes en tiempo real e inteligencia urbana para una ciudad sin barreras.",
+          "App ciudadana de rutas accesibles, reportes en tiempo real y alertas cercanas para una movilidad sin barreras.",
       },
       { property: "og:title", content: "Acento Accesible" },
       {
@@ -75,7 +74,6 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         content: "Movilidad urbana inclusiva impulsada por la comunidad.",
       },
       { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary" },
     ],
     links: [{ rel: "stylesheet", href: appCss }],
   }),
@@ -103,11 +101,12 @@ function RootComponent() {
   const { queryClient } = Route.useRouteContext();
   return (
     <QueryClientProvider client={queryClient}>
-      <div className="min-h-dvh bg-surface">
-        <SiteHeader />
-        <Outlet />
-        <MobileTabbar />
-      </div>
+      <PhoneFrame>
+        <main className="min-h-full">
+          <Outlet />
+        </main>
+        <BottomNav />
+      </PhoneFrame>
     </QueryClientProvider>
   );
 }
