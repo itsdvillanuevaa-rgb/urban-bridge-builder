@@ -24,6 +24,8 @@ function ReportarPage() {
   const [step, setStep] = useState<1 | 2 | 3>(1);
   const [cat, setCat] = useState<ReportCategory | null>(null);
   const [photo, setPhoto] = useState(false);
+  const [description, setDescription] = useState("");
+  const [severity, setSeverity] = useState<"Baja" | "Media" | "Alta" | "Crítica">("Media");
   const navigate = useNavigate();
 
   return (
@@ -122,6 +124,42 @@ function ReportarPage() {
               </>
             )}
           </button>
+
+          <div>
+            <label className="text-sm font-semibold">Descripción del problema</label>
+            <textarea
+              value={description}
+              onChange={(e) => setDescription(e.target.value.slice(0, 300))}
+              placeholder="Describe brevemente el obstáculo encontrado..."
+              maxLength={300}
+              className="mt-2 w-full h-24 rounded-2xl ring-1 ring-border bg-card p-3 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-brand"
+            />
+            <p className="mt-1 text-xs text-muted-foreground text-right">
+              {description.length}/300
+            </p>
+          </div>
+
+          <div>
+            <label className="text-sm font-semibold">Severidad</label>
+            <div className="mt-2 grid grid-cols-4 gap-2">
+              {(["Baja", "Media", "Alta", "Crítica"] as const).map((level) => (
+                <button
+                  key={level}
+                  type="button"
+                  onClick={() => setSeverity(level)}
+                  aria-pressed={severity === level}
+                  className={[
+                    "h-12 rounded-xl ring-1 text-sm font-semibold transition-all",
+                    severity === level
+                      ? "bg-brand ring-brand text-brand-foreground"
+                      : "bg-card ring-border text-foreground",
+                  ].join(" ")}
+                >
+                  {level}
+                </button>
+              ))}
+            </div>
+          </div>
 
           <BigButton onClick={() => setStep(3)}>Enviar reporte</BigButton>
         </div>
