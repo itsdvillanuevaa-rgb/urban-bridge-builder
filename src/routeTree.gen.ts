@@ -11,8 +11,6 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as ReportarRouteImport } from './routes/reportar'
 import { Route as PerfilRouteImport } from './routes/perfil'
-import { Route as InteligenciaRouteImport } from './routes/inteligencia'
-import { Route as ComerciosRouteImport } from './routes/comercios'
 import { Route as IndexRouteImport } from './routes/index'
 
 const ReportarRoute = ReportarRouteImport.update({
@@ -25,16 +23,6 @@ const PerfilRoute = PerfilRouteImport.update({
   path: '/perfil',
   getParentRoute: () => rootRouteImport,
 } as any)
-const InteligenciaRoute = InteligenciaRouteImport.update({
-  id: '/inteligencia',
-  path: '/inteligencia',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ComerciosRoute = ComerciosRouteImport.update({
-  id: '/comercios',
-  path: '/comercios',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -43,44 +31,30 @@ const IndexRoute = IndexRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/comercios': typeof ComerciosRoute
-  '/inteligencia': typeof InteligenciaRoute
   '/perfil': typeof PerfilRoute
   '/reportar': typeof ReportarRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/comercios': typeof ComerciosRoute
-  '/inteligencia': typeof InteligenciaRoute
   '/perfil': typeof PerfilRoute
   '/reportar': typeof ReportarRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/comercios': typeof ComerciosRoute
-  '/inteligencia': typeof InteligenciaRoute
   '/perfil': typeof PerfilRoute
   '/reportar': typeof ReportarRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/comercios' | '/inteligencia' | '/perfil' | '/reportar'
+  fullPaths: '/' | '/perfil' | '/reportar'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/comercios' | '/inteligencia' | '/perfil' | '/reportar'
-  id:
-    | '__root__'
-    | '/'
-    | '/comercios'
-    | '/inteligencia'
-    | '/perfil'
-    | '/reportar'
+  to: '/' | '/perfil' | '/reportar'
+  id: '__root__' | '/' | '/perfil' | '/reportar'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  ComerciosRoute: typeof ComerciosRoute
-  InteligenciaRoute: typeof InteligenciaRoute
   PerfilRoute: typeof PerfilRoute
   ReportarRoute: typeof ReportarRoute
 }
@@ -101,20 +75,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PerfilRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/inteligencia': {
-      id: '/inteligencia'
-      path: '/inteligencia'
-      fullPath: '/inteligencia'
-      preLoaderRoute: typeof InteligenciaRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/comercios': {
-      id: '/comercios'
-      path: '/comercios'
-      fullPath: '/comercios'
-      preLoaderRoute: typeof ComerciosRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/': {
       id: '/'
       path: '/'
@@ -127,11 +87,19 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  ComerciosRoute: ComerciosRoute,
-  InteligenciaRoute: InteligenciaRoute,
   PerfilRoute: PerfilRoute,
   ReportarRoute: ReportarRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
