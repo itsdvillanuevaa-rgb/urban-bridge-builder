@@ -23,8 +23,25 @@ const categories: { id: ReportCategory; label: string; icon: string }[] = [
 function ReportarPage() {
   const [step, setStep] = useState<1 | 2 | 3>(1);
   const [cat, setCat] = useState<ReportCategory | null>(null);
-  const [photo, setPhoto] = useState(false);
+  const [photo, setPhoto] = useState<string | null>(null);
+  const [description, setDescription] = useState("");
+  const [severity, setSeverity] = useState<"Baja" | "Media" | "Alta" | "Crítica">("Media");
   const navigate = useNavigate();
+
+  const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setPhoto(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handlePhotoClick = () => {
+    document.getElementById("photo-input")?.click();
+  };
 
   return (
     <div className="min-h-dvh flex flex-col bg-background pb-24">
@@ -100,11 +117,19 @@ function ReportarPage() {
             <p className="text-sm text-muted-foreground">Ciudad de México</p>
           </div>
 
+          <input
+            id="photo-input"
+            type="file"
+            accept="image/*"
+            onChange={handlePhotoChange}
+            className="hidden"
+          />
+
           <button
             type="button"
-            onClick={() => setPhoto(true)}
+            onClick={handlePhotoClick}
             className={[
-              "w-full h-32 rounded-3xl ring-1 border-dashed flex flex-col items-center justify-center gap-2 transition-all",
+              "w-full h-32 rounded-3xl ring-1 border-dashed flex flex-col items-center justify-center gap-2 transition-all overflow-hidden relative",
               photo
                 ? "bg-success/10 ring-success border-success text-success"
                 : "bg-muted ring-border border text-muted-foreground",
@@ -112,8 +137,15 @@ function ReportarPage() {
           >
             {photo ? (
               <>
-                <Check className="size-8" aria-hidden />
-                <span className="text-sm font-semibold">Foto añadida</span>
+                <img
+                  src={photo}
+                  alt="Vista previa"
+                  className="absolute inset-0 w-full h-full object-cover"
+                />
+                <div className="absolute inset-0 bg-black/30 flex flex-col items-center justify-center gap-2">
+                  <Check className="size-8 text-white" aria-hidden />
+                  <span className="text-sm font-semibold text-white">Foto añadida</span>
+                </div>
               </>
             ) : (
               <>
@@ -122,6 +154,42 @@ function ReportarPage() {
               </>
             )}
           </button>
+
+          <div>
+            <label className="text-sm font-semibold">Descripción del problema</label>
+            <textarea
+              value={description}
+              onChange={(e) => setDescription(e.target.value.slice(0, 300))}
+              placeholder="Describe brevemente el obstáculo encontrado..."
+              maxLength={300}
+              className="mt-2 w-full h-24 rounded-2xl ring-1 ring-border bg-card p-3 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-brand"
+            />
+            <p className="mt-1 text-xs text-muted-foreground text-right">
+              {description.length}/300
+            </p>
+          </div>
+
+          <div>
+            <label className="text-sm font-semibold">Severidad</label>
+            <div className="mt-2 grid grid-cols-4 gap-2">
+              {(["Baja", "Media", "Alta", "Crítica"] as const).map((level) => (
+                <button
+                  key={level}
+                  type="button"
+                  onClick={() => setSeverity(level)}
+                  aria-pressed={severity === level}
+                  className={[
+                    "h-12 rounded-xl ring-1 text-sm font-semibold transition-all",
+                    severity === level
+                      ? "bg-brand ring-brand text-brand-foreground"
+                      : "bg-card ring-border text-foreground",
+                  ].join(" ")}
+                >
+                  {level}
+                </button>
+              ))}
+            </div>
+          </div>
 
           <BigButton onClick={() => setStep(3)}>Enviar reporte</BigButton>
         </div>
@@ -138,7 +206,7 @@ function ReportarPage() {
           </p>
           <div className="mt-10 w-full space-y-3">
             <BigButton onClick={() => navigate({ to: "/" })}>Volver al mapa</BigButton>
-            <BigButton variant="ghost" onClick={() => { setStep(1); setCat(null); setPhoto(false); }}>
+            <BigButton variant="ghost" onClick={() => { setStep(1); setCat(null); setPhoto(null); }}>
               Hacer otro reporte
             </BigButton>
           </div>
