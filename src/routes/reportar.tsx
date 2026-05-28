@@ -1,5 +1,5 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { TopBar } from "@/components/top-bar";
 import { BigButton } from "@/components/big-button";
 import { MapCanvas } from "@/components/map-canvas";
@@ -27,6 +27,7 @@ function ReportarPage() {
   const [description, setDescription] = useState("");
   const [severity, setSeverity] = useState<"Baja" | "Media" | "Alta" | "Crítica">("Media");
   const navigate = useNavigate();
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -40,7 +41,7 @@ function ReportarPage() {
   };
 
   const handlePhotoClick = () => {
-    document.getElementById("photo-input")?.click();
+    fileInputRef.current?.click();
   };
 
   return (
@@ -118,7 +119,7 @@ function ReportarPage() {
           </div>
 
           <input
-            id="photo-input"
+            ref={fileInputRef}
             type="file"
             accept="image/*"
             onChange={handlePhotoChange}
