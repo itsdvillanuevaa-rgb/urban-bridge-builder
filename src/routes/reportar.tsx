@@ -49,9 +49,53 @@ function ReportarPage() {
   const [locationError, setLocationError] = useState<string | null>(null);
   const [isRecording, setIsRecording] = useState(false);
   const [supportsSpeechRecognition, setSupportsSpeechRecognition] = useState(false);
+  const [address, setAddress] = useState<string | null>(null);
+  const [addressLoading, setAddressLoading] = useState(false);
   const navigate = useNavigate();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const recognitionRef = useRef<SpeechRecognition | null>(null);
+
+  const summarizeAddress = (fullAddress: string): { main: string; secondary: string | null } => {
+    const parts = fullAddress.split(',').map((part) => part.trim());
+    
+    // Take first 2-3 most relevant parts (street, zone/neighborhood, city)
+    const relevantParts = parts.slice(0, 3);
+    
+    if (relevantParts.length === 0) {
+      return { main: 'Ubicación actual detectada', secondary: null };
+    }
+    
+    if (relevantParts.length === 1) {
+      return { main: relevantParts[0], secondary: null };
+    }
+    
+    if (relevantParts.length === 2) {
+      return { main: relevantParts[0], secondary: relevantParts[1] };
+    }
+    
+    // If we have 3+ parts, show first as main, combine second and third as secondary
+    return { main: relevantParts[0], secondary: `${relevantParts[1]}, ${relevantParts[2]}` };
+  };
+
+  const reverseGeocode = async (lat: number, lon: number) => {
+    setAddressLoading(true);
+    try {
+      const response = await fetch(
+        `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&accept-language=es`
+      );
+      const data = await response.json();
+      if (data.display_name) {
+        setAddress(data.display_name);
+      } else {
+        setAddress(null);
+      }
+    } catch (error) {
+      console.error("Error reverse geocoding:", error);
+      setAddress(null);
+    } finally {
+      setAddressLoading(false);
+    }
+  };
 
   useEffect(() => {
     if (!navigator.geolocation) {
@@ -64,6 +108,7 @@ function ReportarPage() {
         setLatitude(position.coords.latitude);
         setLongitude(position.coords.longitude);
         setLocationError(null);
+        reverseGeocode(position.coords.latitude, position.coords.longitude);
       },
       (error) => {
         switch (error.code) {
@@ -141,7 +186,7 @@ function ReportarPage() {
     }
   };
   return (
-    <div className="min-h-dvh flex flex-col bg-background pb-24">
+    <div className="min-h-dvh flex flex-col bg-background">
       <TopBar title={step === 3 ? "¡Listo!" : "Nuevo reporte"} back={step < 3} />
 
       {/* Stepper */}
@@ -160,8 +205,8 @@ function ReportarPage() {
       )}
 
       {step === 1 && (
-        <div className="flex-1 flex flex-col px-5 pt-4">
-          <div className="text-center mb-5">
+        <div className="flex-1 flex flex-col justify-center px-5 pt-4 pb-8 safe-bottom">
+          <div className="text-center mb-4">
             <h2 className="text-2xl font-bold tracking-tight">¿Qué encontraste?</h2>
             <p className="mt-1.5 text-base text-muted-foreground">Elige el tipo de barrera.</p>
           </div>
@@ -190,7 +235,7 @@ function ReportarPage() {
             })}
           </div>
 
-          <div className="mt-auto pt-6">
+          <div className="mt-6">
             <BigButton onClick={() => setStep(2)} disabled={!cat}>
               Continuar
             </BigButton>
@@ -199,47 +244,62 @@ function ReportarPage() {
       )}
 
       {step === 2 && (
-        <div className="flex-1 flex flex-col px-6 pt-6 overflow-y-auto">
+        <div className="flex-1 flex flex-col justify-center px-6 pt-4 pb-8 safe-bottom overflow-y-auto">
           <div className="flex-shrink-0">
-            <div className="text-center mb-6">
+            <div className="text-center mb-4">
               <h2 className="text-2xl font-bold tracking-tight">Confirma ubicación</h2>
               <p className="mt-1 text-base text-muted-foreground">
                 Tu reporte se enviará desde aquí.
               </p>
             </div>
 
-            <div className="bg-card rounded-2xl ring-1 ring-border p-5 mb-6">
+            <div className="bg-card rounded-2xl ring-1 ring-border p-5 mb-4">
               <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2">Dirección</p>
-              {latitude !== null && longitude !== null ? (
+              {addressLoading ? (
                 <>
-                  <p className="text-base font-semibold">
-                    Lat: {latitude.toFixed(6)}, Lon: {longitude.toFixed(6)}
-                  </p>
+                  <p className="text-base font-semibold">Obteniendo dirección...</p>
                   <p className="text-sm text-muted-foreground">Ubicación actual detectada</p>
+                </>
+              ) : address ? (
+                (() => {
+                  const { main, secondary } = summarizeAddress(address);
+                  return (
+                    <>
+                      <p className="text-base font-semibold leading-tight">{main}</p>
+                      {secondary && (
+                        <p className="text-sm text-muted-foreground mt-1">{secondary}</p>
+                      )}
+                      <p className="text-xs text-muted-foreground mt-1">Ubicación actual detectada</p>
+                    </>
+                  );
+                })()
+              ) : latitude !== null && longitude !== null ? (
+                <>
+                  <p className="text-base font-semibold">Ubicación actual detectada</p>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    {latitude.toFixed(6)}, {longitude.toFixed(6)}
+                  </p>
                 </>
               ) : locationError ? (
                 <>
-                  <p className="text-base font-semibold">Av. Juárez 30, Centro</p>
-                  <p className="text-sm text-muted-foreground">Ciudad de México</p>
-                  <p className="mt-2 text-sm text-destructive">{locationError}</p>
+                  <p className="text-base font-semibold">Ubicación no disponible</p>
+                  <p className="text-sm text-destructive mt-1">{locationError}</p>
                 </>
               ) : (
                 <>
-                  <p className="text-base font-semibold">Av. Juárez 30, Centro</p>
-                  <p className="text-sm text-muted-foreground">Ciudad de México</p>
-                  <p className="mt-2 text-sm text-muted-foreground">Obteniendo ubicación...</p>
+                  <p className="text-base font-semibold">Obteniendo ubicación...</p>
                 </>
               )}
             </div>
 
-            <div className="mb-6">
+            <div className="mb-4">
               <label className="block text-sm font-semibold mb-2">Descripción del reporte</label>
               <div className="relative">
                 <textarea
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
-                  placeholder="Describe brevemente la barrera u obstáculo..."
-                  className="w-full min-h-24 p-4 pr-12 rounded-2xl ring-1 ring-border bg-card text-base resize-none focus:outline-none focus:ring-2 focus:ring-brand"
+                  placeholder="Escribe aquí…"
+                  className="w-full min-h-24 p-4 pb-12 pr-12 rounded-2xl ring-1 ring-border bg-card text-base resize-none focus:outline-none focus:ring-2 focus:ring-brand"
                   rows={3}
                 />
                 {supportsSpeechRecognition && (
@@ -247,7 +307,7 @@ function ReportarPage() {
                     type="button"
                     onClick={toggleVoiceRecording}
                     className={[
-                      "absolute right-3 top-3 p-2 rounded-full transition-all",
+                      "absolute right-3 bottom-3 p-2 rounded-full transition-all",
                       isRecording
                         ? "bg-destructive/10 text-destructive animate-pulse"
                         : "bg-brand-soft text-brand hover:bg-brand/20",
@@ -297,21 +357,20 @@ function ReportarPage() {
             </button>
           </div>
 
-          <div className="flex-shrink-0 mt-auto pt-6">
+          <div className="flex-shrink-0 mt-6">
             <BigButton onClick={() => setStep(3)}>Enviar reporte</BigButton>
           </div>
         </div>
       )}
 
       {step === 3 && (
-        <div className="flex-1 flex flex-col items-center justify-center px-8 text-center">
+        <div className="flex-1 flex flex-col items-center justify-center px-8 text-center pb-6 safe-bottom">
           <div className="size-24 rounded-full bg-success grid place-items-center animate-pop-in">
             <Check className="size-12 text-success-foreground" strokeWidth={3} aria-hidden />
           </div>
           <h2 className="mt-6 text-3xl font-bold tracking-tight">¡Gracias!</h2>
           <p className="mt-3 text-base text-muted-foreground max-w-xs">
-            Tu reporte ayudará a más de <span className="font-bold text-brand">12 personas</span>{" "}
-            hoy a moverse mejor.
+            Tu reporte está siendo atendido<span className="font-bold text-brand">12 personas</span>{" "}
           </p>
           <div className="mt-10 w-full space-y-3">
             <BigButton onClick={() => navigate({ to: "/" })}>Volver al mapa</BigButton>
