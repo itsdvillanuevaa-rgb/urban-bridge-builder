@@ -97,10 +97,12 @@ function ReportarPage() {
       )}
 
       {step === 1 && (
-        <div className="flex-1 px-6 pt-6">
-          <h2 className="text-2xl font-bold tracking-tight">¿Qué encontraste?</h2>
-          <p className="mt-1 text-base text-muted-foreground">Elige el tipo de barrera.</p>
-          <div className="mt-6 grid grid-cols-2 gap-3">
+        <div className="flex-1 flex flex-col px-5 pt-4">
+          <div className="text-center mb-5">
+            <h2 className="text-2xl font-bold tracking-tight">¿Qué encontraste?</h2>
+            <p className="mt-1.5 text-base text-muted-foreground">Elige el tipo de barrera.</p>
+          </div>
+          <div className="grid grid-cols-2 gap-4">
             {categories.map((c) => {
               const sel = cat === c.id;
               return (
@@ -110,7 +112,7 @@ function ReportarPage() {
                   onClick={() => setCat(c.id)}
                   aria-pressed={sel}
                   className={[
-                    "h-32 rounded-3xl ring-1 flex flex-col items-center justify-center gap-2 transition-all",
+                    "h-28 rounded-2xl ring-1 flex flex-col items-center justify-center gap-1.5 transition-all",
                     sel
                       ? "bg-brand-soft ring-brand text-brand"
                       : "bg-card ring-border text-foreground",
@@ -123,7 +125,7 @@ function ReportarPage() {
             })}
           </div>
 
-          <div className="mt-8">
+          <div className="mt-auto pt-6">
             <BigButton onClick={() => setStep(2)} disabled={!cat}>
               Continuar
             </BigButton>
