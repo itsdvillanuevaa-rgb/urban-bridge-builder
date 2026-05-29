@@ -1,11 +1,10 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState, useEffect } from "react";
-import { TopBar } from "@/components/top-bar";
 import { AlertCard } from "@/components/alert-card";
 import { alerts, type Report, type Alert } from "@/data/mock";
 import { getReports } from "@/data/storage";
 import { categoryMeta } from "@/data/mock";
-import { CheckCircle2, Clock, MapPin } from "lucide-react";
+import { ArrowLeft, Clock, MapPin } from "lucide-react";
 
 export const Route = createFileRoute("/alertas")({
   head: () => ({ meta: [{ title: "Alertas cercanas" }] }),
@@ -133,17 +132,26 @@ function AlertasPage() {
   });
 
   return (
-    <div className="min-h-dvh flex flex-col bg-background pb-24">
-      <TopBar title="Alertas" />
+    <div className="min-h-dvh flex flex-col bg-background">
+      <div className="px-4 pt-4 pb-2">
+        <button
+          type="button"
+          onClick={() => navigate({ to: "/" })}
+          className="size-10 rounded-full bg-card ring-1 ring-border grid place-items-center hover:bg-muted transition-colors"
+          aria-label="Regresar"
+        >
+          <ArrowLeft className="size-5" aria-hidden />
+        </button>
+      </div>
 
-      <div className="px-4 pt-2">
+      <div className="px-4 pt-2 max-w-md mx-auto w-full">
         <p className="text-base text-muted-foreground">
           <span className="font-bold text-foreground">{filteredAlerts.length}</span>{" "}
           alertas activas a menos de 1 km
         </p>
       </div>
 
-      <div className="px-4 pt-4 flex gap-2 overflow-x-auto no-scrollbar">
+      <div className="px-4 pt-4 flex gap-2 overflow-x-auto no-scrollbar max-w-md mx-auto w-full">
         {filters.map((f) => {
           const active = selectedFilter === f;
           return (
@@ -164,7 +172,7 @@ function AlertasPage() {
         })}
       </div>
 
-      <div className="px-4 pt-4 space-y-3">
+      <div className="px-4 pt-4 space-y-3 max-w-md mx-auto w-full">
         {filteredAlerts.length > 0 ? (
           <>
             {filteredReports.map((r) => (
