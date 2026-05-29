@@ -35,10 +35,15 @@ function PerfilPage() {
       {/* Hero */}
       <section className="px-6 pt-4 pb-6 text-center">
         <div className="mx-auto size-24 rounded-full bg-gradient-to-br from-brand to-success grid place-items-center text-white text-3xl font-bold shadow-lg">
-          {profile.name.split(" ").map((n) => n[0]).join("")}
+          {profile.name
+            .split(" ")
+            .map((n) => n[0])
+            .join("")}
         </div>
         <h2 className="mt-3 text-2xl font-bold">{profile.name}</h2>
-        <p className="text-sm text-muted-foreground">{profile.role} · Nivel {profile.level}</p>
+        <p className="text-sm text-muted-foreground">
+          {profile.role} · Nivel {profile.level}
+        </p>
 
         <div className="mt-4 max-w-xs mx-auto">
           <div className="h-2 rounded-full bg-muted overflow-hidden">
@@ -72,7 +77,10 @@ function PerfilPage() {
         <h3 className="text-base font-bold px-1 mb-3">Insignias</h3>
         <div className="grid grid-cols-2 gap-3">
           {profile.badges.map((b) => (
-            <div key={b.name} className="bg-card rounded-2xl ring-1 ring-border p-3 flex gap-3 items-center">
+            <div
+              key={b.name}
+              className="bg-card rounded-2xl ring-1 ring-border p-3 flex gap-3 items-center"
+            >
               <div className="size-10 shrink-0 rounded-xl bg-brand-soft text-brand grid place-items-center">
                 <Award className="size-5" aria-hidden />
               </div>
@@ -106,9 +114,15 @@ function PerfilPage() {
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-semibold truncate">{h.title}</p>
-                  <p className="text-xs text-muted-foreground">{h.when} · #{h.id}</p>
+                  <p className="text-xs text-muted-foreground">
+                    {h.when} · #{h.id}
+                  </p>
                 </div>
-                <span className={["text-[10px] font-bold uppercase px-2 py-1 rounded-full", s.cls].join(" ")}>
+                <span
+                  className={["text-[10px] font-bold uppercase px-2 py-1 rounded-full", s.cls].join(
+                    " ",
+                  )}
+                >
                   {s.label}
                 </span>
                 <ChevronRight className="size-4 text-muted-foreground" aria-hidden />
