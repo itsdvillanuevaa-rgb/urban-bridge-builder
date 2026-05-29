@@ -1,6 +1,7 @@
 import { RouteSuggestion, RoutePreferenceProfile } from "@/types/route";
 import { scoreRoute } from "./accessibilityScoringService";
 import { fetchOSRMRoutes } from "./routingService";
+import { calculateTravelTime } from "./accessibilityTravelTimeService";
 
 /**
  * RouteRecommendationService provides accessibility-aware routing recommendations.
@@ -23,7 +24,13 @@ export async function getRouteRecommendations(
     {
       id: "RT-ACCESSIBLE",
       summary: "Ruta Recomendada (Más Accesible)",
-      durationMin: altRoute2 ? altRoute2.durationMin : Math.round(primaryRoute.durationMin * 1.2),
+      durationMin: calculateTravelTime({
+        distanceKm: altRoute2 ? altRoute2.distanceKm : primaryRoute.distanceKm,
+        mobilityMode: profile.mobilityMode,
+        pendiente: "suave",
+        warningsCount: 0,
+        rampasCount: 8,
+      }),
       distanceKm: altRoute2 ? altRoute2.distanceKm : primaryRoute.distanceKm,
       rampas: 8,
       pendiente: "suave",
@@ -34,7 +41,13 @@ export async function getRouteRecommendations(
     {
       id: "RT-FASTEST",
       summary: "Ruta Más Rápida",
-      durationMin: primaryRoute.durationMin,
+      durationMin: calculateTravelTime({
+        distanceKm: primaryRoute.distanceKm,
+        mobilityMode: profile.mobilityMode,
+        pendiente: "moderada",
+        warningsCount: 2,
+        rampasCount: 4,
+      }),
       distanceKm: primaryRoute.distanceKm,
       rampas: 4,
       pendiente: "moderada",
@@ -56,7 +69,13 @@ export async function getRouteRecommendations(
     {
       id: "RT-ALTERNATIVE",
       summary: "Ruta Alternativa",
-      durationMin: altRoute1.durationMin,
+      durationMin: calculateTravelTime({
+        distanceKm: altRoute1.distanceKm,
+        mobilityMode: profile.mobilityMode,
+        pendiente: "suave",
+        warningsCount: 1,
+        rampasCount: 11,
+      }),
       distanceKm: altRoute1.distanceKm,
       rampas: 11,
       pendiente: "suave",
