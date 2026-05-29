@@ -4,6 +4,7 @@ import { TopBar } from "@/components/top-bar";
 import { BigButton } from "@/components/big-button";
 import { Camera, Check, Mic, MicOff } from "lucide-react";
 import type { ReportCategory } from "@/data/mock";
+import { addReport, generateReportId } from "@/data/storage";
 
 // Type declaration for Web Speech API
 declare global {
@@ -185,6 +186,26 @@ function ReportarPage() {
       setIsRecording(true);
     }
   };
+
+  const handleSubmitReport = () => {
+    if (!cat) return;
+
+    const report = {
+      id: generateReportId(),
+      category: cat,
+      description: description || "",
+      address: address || null,
+      latitude: latitude,
+      longitude: longitude,
+      photo: photo,
+      severity: severity,
+      createdAt: new Date().toISOString(),
+      status: "nuevo" as const,
+    };
+
+    addReport(report);
+    setStep(3);
+  };
   return (
     <div className="min-h-dvh flex flex-col bg-background">
       <TopBar title={step === 3 ? "" : "Nuevo reporte"} back={step < 3} />
@@ -358,7 +379,7 @@ function ReportarPage() {
           </div>
 
           <div className="flex-shrink-0 mt-6">
-            <BigButton onClick={() => setStep(3)}>Enviar reporte</BigButton>
+            <BigButton onClick={handleSubmitReport}>Enviar reporte</BigButton>
           </div>
         </div>
       )}
