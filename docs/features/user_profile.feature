@@ -14,3 +14,4 @@ Feature: User Profile and Community Impact
     Given the user is on the profile tab page ("/perfil")
     When the user clicks the "Ajustes" gear button in the top right corner
     Then the user is redirected to the customization page ("/encuesta") to edit their preferences
+ 
