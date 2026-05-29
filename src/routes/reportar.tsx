@@ -44,7 +44,7 @@ function ReportarPage() {
   const [cat, setCat] = useState<ReportCategory | null>(null);
   const [photo, setPhoto] = useState<string | null>(null);
   const [description, setDescription] = useState("");
-  const [severity, setSeverity] = useState<"Baja" | "Media" | "Alta" | "Crítica">("Media");
+  const [severity, setSeverity] = useState<"alta" | "media" | "baja">("media");
   const [latitude, setLatitude] = useState<number | null>(null);
   const [longitude, setLongitude] = useState<number | null>(null);
   const [locationError, setLocationError] = useState<string | null>(null);
@@ -376,6 +376,32 @@ function ReportarPage() {
                 </>
               )}
             </button>
+
+            <div className="mt-4">
+              <label className="block text-sm font-semibold mb-2">Nivel de gravedad</label>
+              <div className="grid grid-cols-3 gap-2">
+                {[
+                  { value: "alta" as const, label: "Alta" },
+                  { value: "media" as const, label: "Media" },
+                  { value: "baja" as const, label: "Baja" },
+                ].map((option) => (
+                  <button
+                    key={option.value}
+                    type="button"
+                    onClick={() => setSeverity(option.value)}
+                    aria-pressed={severity === option.value}
+                    className={[
+                      "h-12 rounded-xl ring-1 flex flex-col items-center justify-center transition-all",
+                      severity === option.value
+                        ? "bg-brand-soft ring-brand text-brand"
+                        : "bg-card ring-border text-foreground",
+                    ].join(" ")}
+                  >
+                    <span className="text-sm font-semibold">{option.label}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
           </div>
 
           <div className="flex-shrink-0 mt-6">

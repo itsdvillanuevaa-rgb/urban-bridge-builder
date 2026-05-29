@@ -15,10 +15,9 @@ export const Route = createFileRoute("/alertas")({
 const filters = ["Todas", "Alta", "Media", "Baja"];
 
 const severityClass = {
-  "Baja": "bg-success/10 text-success ring-success/30",
-  "Media": "bg-warning/15 text-warning-foreground ring-warning/30",
-  "Alta": "bg-destructive/10 text-destructive ring-destructive/20",
-  "Crítica": "bg-destructive/20 text-destructive ring-destructive/30",
+  "baja": "bg-success/10 text-success ring-success/30",
+  "media": "bg-warning/15 text-warning-foreground ring-warning/30",
+  "alta": "bg-destructive/10 text-destructive ring-destructive/20",
 } as const;
 
 function timeAgo(isoString: string) {
@@ -63,7 +62,7 @@ function ReportCard({ report }: { report: Report }) {
           <p className="text-sm text-foreground mt-1 line-clamp-2">{report.description}</p>
         )}
         <div className="flex items-center gap-2 mt-2 text-xs text-muted-foreground">
-          <span className="font-semibold text-brand">{report.severity}</span>
+          <span className="font-semibold text-brand capitalize">{report.severity}</span>
           <span>·</span>
           <span className="inline-flex items-center gap-1">
             <Clock className="size-3" aria-hidden /> {timeAgo(report.createdAt)}
@@ -76,6 +75,7 @@ function ReportCard({ report }: { report: Report }) {
 
 function AlertasPage() {
   const [reports, setReports] = useState<Report[]>([]);
+  const [selectedFilter, setSelectedFilter] = useState<string>("Todas");
 
   useEffect(() => {
     const loadedReports = getReports();
@@ -85,25 +85,59 @@ function AlertasPage() {
   const allAlerts = [...reports, ...alerts];
   const hasAlerts = allAlerts.length > 0;
 
+  const filteredAlerts = allAlerts.filter((item) => {
+    if (selectedFilter === "Todas") return true;
+    
+    const itemSeverity = "severity" in item ? item.severity : null;
+    if (!itemSeverity) return false;
+    
+    if (selectedFilter === "Alta") return itemSeverity === "alta";
+    if (selectedFilter === "Media") return itemSeverity === "media";
+    if (selectedFilter === "Baja") return itemSeverity === "baja";
+    
+    return true;
+  });
+
+  const filteredReports = reports.filter((report) => {
+    if (selectedFilter === "Todas") return true;
+    
+    if (selectedFilter === "Alta") return report.severity === "alta";
+    if (selectedFilter === "Media") return report.severity === "media";
+    if (selectedFilter === "Baja") return report.severity === "baja";
+    
+    return true;
+  });
+
+  const filteredMockAlerts = alerts.filter((alert) => {
+    if (selectedFilter === "Todas") return true;
+    
+    if (selectedFilter === "Alta") return alert.severity === "alta";
+    if (selectedFilter === "Media") return alert.severity === "media";
+    if (selectedFilter === "Baja") return alert.severity === "baja";
+    
+    return true;
+  });
+
   return (
     <div className="min-h-dvh flex flex-col bg-background pb-24">
       <TopBar title="Alertas" />
 
       <div className="px-4 pt-2">
         <p className="text-base text-muted-foreground">
-          <span className="font-bold text-foreground">{allAlerts.length}</span> alertas activas a menos
+          <span className="font-bold text-foreground">{filteredAlerts.length}</span> alertas activas a menos
           de 1 km
         </p>
       </div>
 
       <div className="px-4 pt-4 flex gap-2 overflow-x-auto no-scrollbar">
-        {filters.map((f, i) => (
+        {filters.map((f) => (
           <button
             key={f}
             type="button"
+            onClick={() => setSelectedFilter(f)}
             className={[
               "h-10 px-4 rounded-full text-sm font-semibold whitespace-nowrap ring-1 transition-colors",
-              i === 0
+              selectedFilter === f
                 ? "bg-foreground text-background ring-foreground"
                 : "bg-card text-foreground ring-border",
             ].join(" ")}
@@ -114,18 +148,18 @@ function AlertasPage() {
       </div>
 
       <div className="px-4 pt-4 space-y-3">
-        {hasAlerts ? (
+        {filteredAlerts.length > 0 ? (
           <>
-            {reports.map((r) => (
+            {filteredReports.map((r) => (
               <ReportCard key={r.id} report={r} />
             ))}
-            {alerts.map((a) => (
+            {filteredMockAlerts.map((a) => (
               <AlertCard key={a.id} alert={a} />
             ))}
           </>
         ) : (
           <div className="text-center py-12">
-            <p className="text-base text-muted-foreground">Aún no hay alertas reportadas.</p>
+            <p className="text-base text-muted-foreground">No hay alertas con este filtro.</p>
           </div>
         )}
       </div>

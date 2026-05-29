@@ -38,7 +38,7 @@ export type Report = {
   latitude: number | null;
   longitude: number | null;
   photo: string | null;
-  severity: "Baja" | "Media" | "Alta" | "Crítica";
+  severity: "alta" | "media" | "baja";
   createdAt: string;
   status: "nuevo" | "pendiente";
 };

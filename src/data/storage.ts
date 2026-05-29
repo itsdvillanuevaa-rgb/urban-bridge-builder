@@ -6,7 +6,12 @@ export const getReports = (): Report[] => {
   try {
     const stored = localStorage.getItem(REPORTS_STORAGE_KEY);
     if (!stored) return [];
-    return JSON.parse(stored);
+    const reports = JSON.parse(stored);
+    // Add fallback for existing reports without severity
+    return reports.map((report: any) => ({
+      ...report,
+      severity: report.severity || "media",
+    }));
   } catch (error) {
     console.error("Error reading reports from localStorage:", error);
     return [];
