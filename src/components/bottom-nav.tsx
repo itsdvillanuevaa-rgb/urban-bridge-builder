@@ -21,7 +21,7 @@ export function BottomNav() {
   return (
     <nav
       aria-label="Navegación principal"
-      className="absolute bottom-0 left-0 right-0 z-40 bg-card/95 backdrop-blur-xl border-t border-border safe-bottom"
+      className="absolute bottom-0 left-0 right-0 z-40 bg-card/95 backdrop-blur-xl safe-bottom"
     >
       <ul className="flex items-end justify-around px-2 pt-2">
         {items.map(({ to, label, icon: Icon, primary }) => {

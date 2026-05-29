@@ -5,13 +5,11 @@ import { SearchBar } from "@/components/SearchBar";
 import { SearchSuggestions } from "@/components/SearchSuggestions";
 import { RouteOptionsPanel } from "@/components/RouteOptionsPanel";
 import { MapCanvas } from "@/components/map-canvas";
-import { RouteAlertBanner } from "@/components/route-alert-banner";
 import { useLocationSearch } from "@/hooks/useLocationSearch";
 import { useSearchHistory } from "@/hooks/useSearchHistory";
 import { useUserLocation } from "@/hooks/useUserLocation";
 import { LocationSuggestion } from "@/types/location";
 import { SearchHistoryEntry } from "@/types/accessibility";
-import { tijuanaRouteAlert, mainTijuanaRoute, alternativeTijuanaRoute } from "@/data/mock";
 
 const TIJUANA_CENTER: [number, number] = [32.5145, -117.0395];
 
@@ -26,8 +24,6 @@ function RutasPage() {
   const [activeField, setActiveField] = useState<"origen" | "destino" | null>(null);
   const [selectedDestino, setSelectedDestino] = useState("");
   const [activeGeometry, setActiveGeometry] = useState<[number, number][] | null>(null);
-  const [isDemoMode, setIsDemoMode] = useState(false);
-  const [showAlert, setShowAlert] = useState(false);
 
   // States to store real lat/lon coordinate numbers
   const [originCoords, setOriginCoords] = useState<[number, number] | null>(null);
@@ -121,27 +117,6 @@ function RutasPage() {
     removeQuery(item);
   };
 
-  const activateDemoMode = () => {
-    setIsDemoMode(true);
-    setShowAlert(true);
-    setOrigen("Taxis adaptados - Av. Constitución");
-    setDestino("Centro de Salud - Av. Constitución");
-    setSelectedDestino("Centro de Salud - Av. Constitución");
-    setOriginCoords([32.5145, -117.0395]);
-    setDestinoCoords([32.5158, -117.0375]);
-    setActiveGeometry(mainTijuanaRoute.geometry);
-    setActiveField(null);
-    clearSearch();
-  };
-
-  const deactivateDemoMode = () => {
-    setIsDemoMode(false);
-    setShowAlert(false);
-    setDestino("");
-    setSelectedDestino("");
-    setDestinoCoords(null);
-    setActiveGeometry(null);
-  };
 
   const showDropdown = activeField !== null;
 
@@ -166,29 +141,6 @@ function RutasPage() {
           onInputFocus={handleInputFocus}
         />
 
-        {!isDemoMode && (
-          <button
-            type="button"
-            onClick={activateDemoMode}
-            className="w-full bg-brand text-white font-semibold py-3 px-4 rounded-2xl hover:bg-brand/90 transition-colors flex items-center justify-center gap-2 shadow-sm"
-          >
-            <span className="text-lg">🚗</span>
-            <div className="text-left">
-              <div className="text-sm font-semibold">Demo: Ruta accesible</div>
-              <div className="text-xs opacity-90">Zona Centro, Tijuana</div>
-            </div>
-          </button>
-        )}
-
-        {isDemoMode && (
-          <button
-            type="button"
-            onClick={deactivateDemoMode}
-            className="w-full bg-muted text-muted-foreground font-semibold py-3 px-4 rounded-2xl hover:bg-muted/80 transition-colors"
-          >
-            ✕ Salir de demo
-          </button>
-        )}
 
         {showDropdown && (
           <SearchSuggestions
@@ -204,26 +156,6 @@ function RutasPage() {
         )}
       </div>
 
-      {/* Show location context when demo is active */}
-      {isDemoMode && (
-        <div className="mx-4 mt-4 bg-card rounded-2xl ring-1 ring-border p-4 shadow-sm">
-          <div className="flex items-center gap-2 text-sm">
-            <span className="text-lg">📍</span>
-            <div className="flex-1">
-              <div className="font-semibold text-foreground">Zona Centro, Tijuana</div>
-              <div className="text-xs text-muted-foreground">Ruta: Taxis adaptados → Centro de Salud</div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Show alert banner when demo is active */}
-      {isDemoMode && showAlert && (
-        <RouteAlertBanner
-          alert={tijuanaRouteAlert}
-          onDismiss={() => setShowAlert(false)}
-        />
-      )}
 
       {/* Render map canvas with dynamic coordinates bounds fitting */}
       {selectedDestino && destinoCoords && (
@@ -231,8 +163,6 @@ function RutasPage() {
           <MapCanvas
             userLocation={activeOriginCoords}
             routeGeometry={activeGeometry}
-            alertPosition={isDemoMode ? tijuanaRouteAlert.position : undefined}
-            alternativeRouteGeometry={isDemoMode ? alternativeTijuanaRoute.geometry : undefined}
           />
         </div>
       )}
@@ -242,7 +172,6 @@ function RutasPage() {
           originCoords={activeOriginCoords}
           destinationCoords={destinoCoords}
           onRouteSelect={setActiveGeometry}
-          isDemoMode={isDemoMode}
         />
       )}
     </div>

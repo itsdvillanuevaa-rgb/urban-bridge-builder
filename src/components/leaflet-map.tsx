@@ -4,7 +4,7 @@ import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { AccessibilityPoint } from "@/types/accessibility";
 
-const CDMX_CENTER: [number, number] = [19.4326, -99.1332];
+const TIJUANA_CENTER: [number, number] = [32.5149, -117.0382];
 
 
 
@@ -130,12 +130,12 @@ export default function LeafletMap({
   alertPosition,
   alternativeRouteGeometry,
 }: LeafletMapProps) {
-  const mapCenter = userLocation || CDMX_CENTER;
+  const mapCenter = userLocation || TIJUANA_CENTER;
 
   return (
     <MapContainer
       center={mapCenter}
-      zoom={15}
+      zoom={16}
       scrollWheelZoom={true}
       zoomControl={false}
       attributionControl={false}

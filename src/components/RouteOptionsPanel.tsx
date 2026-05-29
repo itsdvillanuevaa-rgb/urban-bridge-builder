@@ -2,20 +2,17 @@ import React, { useEffect, useState } from "react";
 import { getRouteRecommendations } from "@/services/routeRecommendationService";
 import { RouteSuggestion, RoutePreferenceProfile } from "@/types/route";
 import { RouteCard } from "./RouteCard";
-import { mainTijuanaRoute, alternativeTijuanaRoute } from "@/data/mock";
 
 interface RouteOptionsPanelProps {
   originCoords: [number, number] | null;
   destinationCoords: [number, number] | null;
   onRouteSelect: (geometry: [number, number][] | null) => void;
-  isDemoMode?: boolean;
 }
 
 export function RouteOptionsPanel({
   originCoords,
   destinationCoords,
   onRouteSelect,
-  isDemoMode = false,
 }: RouteOptionsPanelProps) {
   const [routes, setRoutes] = useState<RouteSuggestion[]>([]);
   const [loading, setLoading] = useState(false);
@@ -51,45 +48,6 @@ export function RouteOptionsPanel({
       return;
     }
 
-    // Use mock data for demo mode
-    if (isDemoMode) {
-      const demoRoutes: RouteSuggestion[] = [
-        {
-          id: "RT-TIJ-ALT",
-          summary: "Ruta recomendada: evita banqueta obstruida",
-          durationMin: alternativeTijuanaRoute.durationMin,
-          distanceKm: 0.6,
-          score: alternativeTijuanaRoute.score,
-          rampas: alternativeTijuanaRoute.rampas,
-          pendiente: alternativeTijuanaRoute.pendiente,
-          via: alternativeTijuanaRoute.via,
-          explanations: ["Más accesible", "Evita barreras", "Ruta segura"],
-          geometry: alternativeTijuanaRoute.geometry,
-        },
-        {
-          id: "RT-TIJ-MAIN",
-          summary: "Ruta directa por Av. Constitución",
-          durationMin: mainTijuanaRoute.durationMin,
-          distanceKm: 0.5,
-          score: mainTijuanaRoute.score,
-          rampas: mainTijuanaRoute.rampas,
-          pendiente: mainTijuanaRoute.pendiente,
-          via: mainTijuanaRoute.via,
-          warnings: [
-            {
-              id: "W-TIJ-1",
-              message: "Banqueta obstruida por obras temporales",
-              severity: "alta",
-            },
-          ],
-          geometry: mainTijuanaRoute.geometry,
-        },
-      ];
-      setRoutes(demoRoutes);
-      setSelectedRouteId("RT-TIJ-ALT");
-      return;
-    }
-
     let isMounted = true;
     setLoading(true);
     setError(null);
@@ -115,7 +73,7 @@ export function RouteOptionsPanel({
     return () => {
       isMounted = false;
     };
-  }, [originLat, originLon, destLat, destLon, isDemoMode]);
+  }, [originLat, originLon, destLat, destLon]);
 
   useEffect(() => {
     const selected = routes.find((r) => r.id === selectedRouteId);
