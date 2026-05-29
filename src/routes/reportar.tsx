@@ -2,8 +2,7 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState, useRef, useEffect } from "react";
 import { TopBar } from "@/components/top-bar";
 import { BigButton } from "@/components/big-button";
-import { MapCanvas } from "@/components/map-canvas";
-import { Camera, Check, MapPin } from "lucide-react";
+import { Camera, Check } from "lucide-react";
 import type { ReportCategory } from "@/data/mock";
 
 export const Route = createFileRoute("/reportar")({
@@ -135,76 +134,84 @@ function ReportarPage() {
       )}
 
       {step === 2 && (
-        <div className="flex-1 px-6 pt-6 space-y-6">
-          <div>
-            <h2 className="text-2xl font-bold tracking-tight">Confirma ubicación</h2>
-            <p className="mt-1 text-base text-muted-foreground">
-              Tu reporte se enviará desde aquí.
-            </p>
-          </div>
-
-          <div className="relative h-48 rounded-3xl overflow-hidden ring-1 ring-border">
-            <MapCanvas />
-            <div className="absolute inset-0 grid place-items-center pointer-events-none">
-              <MapPin className="size-10 text-brand drop-shadow-lg" strokeWidth={2.5} aria-hidden />
+        <div className="flex-1 flex flex-col px-6 pt-6 overflow-y-auto">
+          <div className="flex-shrink-0">
+            <div className="text-center mb-6">
+              <h2 className="text-2xl font-bold tracking-tight">Confirma ubicación</h2>
+              <p className="mt-1 text-base text-muted-foreground">
+                Tu reporte se enviará desde aquí.
+              </p>
             </div>
+
+            <div className="bg-card rounded-2xl ring-1 ring-border p-5 mb-6">
+              <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2">Dirección</p>
+              {latitude !== null && longitude !== null ? (
+                <>
+                  <p className="text-base font-semibold">
+                    Lat: {latitude.toFixed(6)}, Lon: {longitude.toFixed(6)}
+                  </p>
+                  <p className="text-sm text-muted-foreground">Ubicación actual detectada</p>
+                </>
+              ) : locationError ? (
+                <>
+                  <p className="text-base font-semibold">Av. Juárez 30, Centro</p>
+                  <p className="text-sm text-muted-foreground">Ciudad de México</p>
+                  <p className="mt-2 text-sm text-destructive">{locationError}</p>
+                </>
+              ) : (
+                <>
+                  <p className="text-base font-semibold">Av. Juárez 30, Centro</p>
+                  <p className="text-sm text-muted-foreground">Ciudad de México</p>
+                  <p className="mt-2 text-sm text-muted-foreground">Obteniendo ubicación...</p>
+                </>
+              )}
+            </div>
+
+            <div className="mb-6">
+              <label className="block text-sm font-semibold mb-2">Descripción del reporte</label>
+              <textarea
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                placeholder="Describe los detalles de la barrera..."
+                className="w-full min-h-24 p-4 rounded-2xl ring-1 ring-border bg-card text-base resize-none focus:outline-none focus:ring-2 focus:ring-brand"
+                rows={3}
+              />
+            </div>
+
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              onChange={handlePhotoChange}
+              className="hidden"
+            />
+            <button
+              type="button"
+              onClick={handlePhotoClick}
+              className={[
+                "w-full h-24 rounded-2xl ring-1 flex flex-col items-center justify-center gap-2 transition-all",
+                photo
+                  ? "bg-success/10 ring-success text-success"
+                  : "bg-brand-soft ring-brand text-brand",
+              ].join(" ")}
+            >
+              {photo ? (
+                <>
+                  <Check className="size-6" aria-hidden />
+                  <span className="text-sm font-semibold">Foto añadida</span>
+                </>
+              ) : (
+                <>
+                  <Camera className="size-6" aria-hidden />
+                  <span className="text-sm font-semibold">Tomar foto</span>
+                </>
+              )}
+            </button>
           </div>
 
-          <div className="bg-card rounded-2xl ring-1 ring-border p-4">
-            <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Dirección</p>
-            {latitude !== null && longitude !== null ? (
-              <>
-                <p className="mt-1 text-base font-semibold">
-                  Lat: {latitude.toFixed(6)}, Lon: {longitude.toFixed(6)}
-                </p>
-                <p className="text-sm text-muted-foreground">Ubicación actual detectada</p>
-              </>
-            ) : locationError ? (
-              <>
-                <p className="mt-1 text-base font-semibold">Av. Juárez 30, Centro</p>
-                <p className="text-sm text-muted-foreground">Ciudad de México</p>
-                <p className="mt-2 text-sm text-destructive">{locationError}</p>
-              </>
-            ) : (
-              <>
-                <p className="mt-1 text-base font-semibold">Av. Juárez 30, Centro</p>
-                <p className="text-sm text-muted-foreground">Ciudad de México</p>
-                <p className="mt-2 text-sm text-muted-foreground">Obteniendo ubicación...</p>
-              </>
-            )}
+          <div className="flex-shrink-0 mt-auto pt-6">
+            <BigButton onClick={() => setStep(3)}>Enviar reporte</BigButton>
           </div>
-
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept="image/*"
-            onChange={handlePhotoChange}
-            className="hidden"
-          />
-          <button
-            type="button"
-            onClick={handlePhotoClick}
-            className={[
-              "w-full h-32 rounded-3xl ring-1 border-dashed flex flex-col items-center justify-center gap-2 transition-all",
-              photo
-                ? "bg-success/10 ring-success border-success text-success"
-                : "bg-muted ring-border border text-muted-foreground",
-            ].join(" ")}
-          >
-            {photo ? (
-              <>
-                <Check className="size-8" aria-hidden />
-                <span className="text-sm font-semibold">Foto añadida</span>
-              </>
-            ) : (
-              <>
-                <Camera className="size-8" aria-hidden />
-                <span className="text-sm font-semibold">Agregar foto (opcional)</span>
-              </>
-            )}
-          </button>
-
-          <BigButton onClick={() => setStep(3)}>Enviar reporte</BigButton>
         </div>
       )}
 
