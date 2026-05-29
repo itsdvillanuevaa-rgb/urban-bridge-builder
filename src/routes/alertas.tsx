@@ -92,6 +92,7 @@ function AlertasPage() {
 
   useEffect(() => {
     const loadedReports = getReports();
+    console.info("Reportes cargados en Alertas:", loadedReports.length);
     setReports(loadedReports);
   }, []);
 

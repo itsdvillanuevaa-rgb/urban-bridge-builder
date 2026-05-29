@@ -40,6 +40,13 @@ const poiIcons: Record<string, string> = {
   descanso: "🪑",
 };
 
+const alertIcon = L.divIcon({
+  className: "",
+  html: `<div style="width:40px;height:40px;border-radius:50%;background:#ef4444;color:white;box-shadow:0 4px 12px rgba(239,68,68,0.4);display:grid;place-items:center;font-size:20px;font-weight:bold;border:3px solid white;">🚧</div>`,
+  iconSize: [40, 40],
+  iconAnchor: [20, 20],
+});
+
 const poiColors: Record<string, string> = {
   baños: "var(--brand)",
   rampas: "var(--success)",
@@ -111,6 +118,8 @@ export interface LeafletMapProps {
   routeGeometry?: [number, number][] | null;
   recenterTrigger?: number;
   discoveryPoints?: AccessibilityPoint[];
+  alertPosition?: [number, number] | null;
+  alternativeRouteGeometry?: [number, number][] | null;
 }
 
 export default function LeafletMap({
@@ -118,6 +127,8 @@ export default function LeafletMap({
   routeGeometry,
   recenterTrigger,
   discoveryPoints,
+  alertPosition,
+  alternativeRouteGeometry,
 }: LeafletMapProps) {
   const mapCenter = userLocation || CDMX_CENTER;
 
@@ -160,6 +171,31 @@ export default function LeafletMap({
             <Popup>Destino</Popup>
           </Marker>
         </>
+      )}
+
+      {/* Render alternative route polyline */}
+      {alternativeRouteGeometry && alternativeRouteGeometry.length > 0 && (
+        <Polyline
+          positions={alternativeRouteGeometry}
+          pathOptions={{
+            color: "#22c55e",
+            weight: 5,
+            dashArray: "12 4",
+            opacity: 0.7,
+          }}
+        />
+      )}
+
+      {/* Render alert marker */}
+      {alertPosition && (
+        <Marker position={alertPosition} icon={alertIcon}>
+          <Popup>
+            <div className="p-2">
+              <h4 className="font-bold text-sm">⚠️ Obra en la ruta</h4>
+              <p className="text-xs mt-1">Se recomienda tomar ruta alternativa</p>
+            </div>
+          </Popup>
+        </Marker>
       )}
 
       {/* Render nearby accessibility discovery points */}

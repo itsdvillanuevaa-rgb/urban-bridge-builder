@@ -4,6 +4,7 @@ export type ReportCategory =
   | "paso-obstruido"
   | "cruce-peligroso"
   | "paso-estrecho"
+  | "obra-en-ruta"
   | "otro-problema";
 
 export const categoryMeta: Record<
@@ -15,6 +16,7 @@ export const categoryMeta: Record<
   "paso-obstruido": { label: "Paso obstruido", tone: "warning", icon: "🚧" },
   "cruce-peligroso": { label: "Cruce peligroso", tone: "warning", icon: "🚦" },
   "paso-estrecho": { label: "Paso estrecho", tone: "warning", icon: "�" },
+  "obra-en-ruta": { label: "Obra en ruta", tone: "danger", icon: "🚧" },
   "otro-problema": { label: "Otro problema", tone: "muted", icon: "📍" },
 };
 
@@ -163,4 +165,76 @@ export const profile = {
     { id: "R-478", title: "Elevador Metro Hidalgo", status: "verificado" as const, when: "Lun" },
     { id: "R-470", title: "Banqueta bloqueada Reforma", status: "resuelto" as const, when: "Vie" },
   ],
+};
+
+// Demo data for Tijuana route with accessibility alert
+export type RouteAlert = {
+  id: string;
+  category: ReportCategory;
+  title: string;
+  description: string;
+  location: string;
+  severity: "alta" | "media" | "baja";
+  recommendation: string;
+  position: [number, number];
+};
+
+export const tijuanaRouteAlert: RouteAlert = {
+  id: "RA-TIJ-001",
+  category: "banqueta-danada",
+  title: "Banqueta obstruida en tu ruta",
+  description: "Se detectó una banqueta obstruida por obras temporales en Av. Constitución. Puede dificultar el paso para personas con movilidad reducida.",
+  location: "Av. Constitución esq. 3ra St., Zona Centro",
+  severity: "alta",
+  recommendation: "Te sugerimos tomar una ruta alternativa más accesible por Av. Revolución.",
+  position: [32.5152, -117.0385],
+};
+
+export type DemoRoute = {
+  id: string;
+  summary: string;
+  durationMin: number;
+  score: number;
+  rampas: number;
+  pendiente: "suave" | "moderada" | "alta";
+  via: string;
+  geometry: [number, number][];
+  isAlternative?: boolean;
+};
+
+// Main route to Centro de Salud (with sidewalk obstruction)
+export const mainTijuanaRoute: DemoRoute = {
+  id: "RT-TIJ-MAIN",
+  summary: "Ruta directa por Av. Constitución",
+  durationMin: 12,
+  score: 58,
+  rampas: 3,
+  pendiente: "moderada",
+  via: "vía Av. Constitución",
+  geometry: [
+    [32.5145, -117.0395],
+    [32.5148, -117.0390],
+    [32.5152, -117.0385],
+    [32.5155, -117.0380],
+    [32.5158, -117.0375],
+  ],
+};
+
+// Alternative route (avoids obstruction via Av. Revolución)
+export const alternativeTijuanaRoute: DemoRoute = {
+  id: "RT-TIJ-ALT",
+  summary: "Ruta recomendada: evita banqueta obstruida",
+  durationMin: 16,
+  score: 94,
+  rampas: 5,
+  pendiente: "suave",
+  via: "vía Av. Revolución",
+  geometry: [
+    [32.5145, -117.0395],
+    [32.5148, -117.0400],
+    [32.5152, -117.0405],
+    [32.5155, -117.0400],
+    [32.5158, -117.0375],
+  ],
+  isAlternative: true,
 };

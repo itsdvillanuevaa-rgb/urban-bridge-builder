@@ -191,6 +191,7 @@ function ReportarPage() {
   const handleSubmitReport = async () => {
     if (!cat) return;
 
+    // Build local report object
     const report = {
       id: generateReportId(),
       category: cat,
@@ -204,10 +205,17 @@ function ReportarPage() {
       status: "nuevo" as const,
     };
 
+    console.info("Guardando reporte local:", report);
     addReport(report);
+    console.info("Reporte guardado localmente");
 
+    // Show success screen immediately after local save
+    setStep(3);
+
+    // Try to save to Supabase in the background (non-blocking)
     try {
-      const result = await createReport({
+      console.info("Intentando guardar reporte en Supabase");
+      const supabasePayload = {
         category: cat,
         description: description || "",
         address: address || null,
@@ -215,20 +223,21 @@ function ReportarPage() {
         lng: longitude,
         severity: severity,
         photo_url: photo || null,
-        status: "activo",
-      });
+        status: "activo" as const,
+      };
+      console.info("Payload Supabase:", supabasePayload);
+
+      const result = await createReport(supabasePayload);
 
       if (result) {
         console.info("Reporte guardado en Supabase");
       } else {
-        console.info("Supabase falló, usando fallback local");
+        console.info("Error Supabase, manteniendo reporte local");
       }
     } catch (error) {
-      console.error("Error saving report to Supabase:", error);
-      console.info("Supabase falló, usando fallback local");
+      console.error("Error Supabase:", error);
+      console.info("Error Supabase, manteniendo reporte local");
     }
-
-    setStep(3);
   };
   return (
     <div className="min-h-dvh flex flex-col bg-background">

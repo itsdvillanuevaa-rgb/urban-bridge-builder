@@ -45,6 +45,7 @@ export const addReport = (report: Report): void => {
   const reports = getReports();
   reports.unshift(report); // Add to beginning of array
   saveReports(reports);
+  console.info("Reportes en localStorage después de agregar:", reports.length);
 };
 
 export const generateReportId = (): string => {
