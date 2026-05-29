@@ -1,10 +1,11 @@
 import React from "react";
-import { Clock, Mountain, CheckCircle2, AlertTriangle } from "lucide-react";
+import { Clock, Mountain, CheckCircle2, AlertTriangle, Sparkles, Sofa, Bath, Milestone, Footprints } from "lucide-react";
 import { RouteSuggestion } from "@/types/route";
 
 interface RouteCardProps {
   route: RouteSuggestion;
   isSelected: boolean;
+  isBest?: boolean;
   onSelect: () => void;
 }
 
@@ -14,7 +15,7 @@ function scoreColor(s: number) {
   return "text-warning-foreground";
 }
 
-export function RouteCard({ route, isSelected, onSelect }: RouteCardProps) {
+export function RouteCard({ route, isSelected, isBest, onSelect }: RouteCardProps) {
   return (
     <button
       type="button"
@@ -28,9 +29,9 @@ export function RouteCard({ route, isSelected, onSelect }: RouteCardProps) {
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-2">
             <h3 className="text-base font-bold truncate text-foreground">{route.summary}</h3>
-            {route.id === "RT-ACCESSIBLE" && (
+            {isBest && (
               <span className="inline-flex items-center gap-1 text-[10px] font-bold uppercase text-brand bg-brand-soft px-2 py-0.5 rounded-full">
-                <CheckCircle2 className="size-3" aria-hidden /> Mejor
+                <CheckCircle2 className="size-3" aria-hidden /> Recomendada
               </span>
             )}
           </div>
@@ -60,7 +61,8 @@ export function RouteCard({ route, isSelected, onSelect }: RouteCardProps) {
         </span>
       </div>
 
-      {route.explanations && route.explanations.length > 0 && (
+      {/* Explanations as pills (only when NOT selected for cleaner UI) */}
+      {!isSelected && route.explanations && route.explanations.length > 0 && (
         <div className="mt-3 flex flex-wrap gap-1">
           {route.explanations.map((exp, idx) => (
             <span
@@ -70,6 +72,83 @@ export function RouteCard({ route, isSelected, onSelect }: RouteCardProps) {
               {exp}
             </span>
           ))}
+        </div>
+      )}
+
+      {/* Collapsible Environmental Intelligence Sheet (when selected) */}
+      {isSelected && (
+        <div className="mt-5 pt-4 border-t border-border space-y-4 animate-fade-up">
+          <div className="space-y-2">
+            <h4 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
+              Ficha de Inteligencia Ambiental
+            </h4>
+            
+            <div className="grid grid-cols-2 gap-3 text-xs">
+              {/* Slopes */}
+              <div className="bg-muted/40 p-2.5 rounded-2xl flex items-start gap-2.5">
+                <Mountain className="size-4 text-brand shrink-0 mt-0.5" />
+                <div>
+                  <span className="font-semibold text-muted-foreground block text-[10px] uppercase">Pendiente</span>
+                  <span className="font-bold text-foreground">
+                    {route.averageSlope !== undefined ? `${route.averageSlope}% prom` : "N/D"}
+                    {route.highestSlopeSegment !== undefined ? ` (${route.highestSlopeSegment}% máx)` : ""}
+                  </span>
+                </div>
+              </div>
+
+              {/* Surface Quality & Sidewalk Continuity */}
+              <div className="bg-muted/40 p-2.5 rounded-2xl flex items-start gap-2.5">
+                <Footprints className="size-4 text-brand shrink-0 mt-0.5" />
+                <div>
+                  <span className="font-semibold text-muted-foreground block text-[10px] uppercase">Estado de Vía</span>
+                  <span className="font-bold text-foreground capitalize">
+                    {route.surfaceQuality || "Normal"} (Cont. {route.sidewalkContinuity || "media"})
+                  </span>
+                </div>
+              </div>
+
+              {/* Crossings */}
+              <div className="bg-muted/40 p-2.5 rounded-2xl flex items-start gap-2.5">
+                <Milestone className="size-4 text-brand shrink-0 mt-0.5" />
+                <div>
+                  <span className="font-semibold text-muted-foreground block text-[10px] uppercase">Cruces Peatonales</span>
+                  <span className="font-bold text-foreground">
+                    {route.accessibleCrossings !== undefined ? `${route.accessibleCrossings} seguros` : "N/D"}
+                  </span>
+                </div>
+              </div>
+
+              {/* Rest Opportunities & Bathrooms */}
+              <div className="bg-muted/40 p-2.5 rounded-2xl flex items-start gap-2.5">
+                <Sofa className="size-4 text-brand shrink-0 mt-0.5" />
+                <div>
+                  <span className="font-semibold text-muted-foreground block text-[10px] uppercase">Servicios</span>
+                  <span className="font-bold text-foreground">
+                    {route.nearbyRestAreas !== undefined ? `${route.nearbyRestAreas} bancos` : "0 bancos"}
+                    {route.nearbyBathrooms ? ` / ${route.nearbyBathrooms} baño(s)` : ""}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Bulleted justifications list */}
+          {route.explanations && route.explanations.length > 0 && (
+            <div className="space-y-2">
+              <h5 className="text-xs font-bold text-foreground/80 flex items-center gap-1.5">
+                <Sparkles className="size-3.5 text-brand" />
+                ¿Por qué se recomendó esta ruta?
+              </h5>
+              <ul className="space-y-1.5 text-xs text-muted-foreground pl-1">
+                {route.explanations.map((exp, idx) => (
+                  <li key={idx} className="flex items-start gap-2">
+                    <span className="text-brand shrink-0 font-bold">•</span>
+                    <span>{exp}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
         </div>
       )}
 

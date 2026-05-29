@@ -112,11 +112,12 @@ export function RouteOptionsPanel({
       <h2 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground px-1">
         Rutas sugeridas
       </h2>
-      {routes.map((route) => (
+      {routes.map((route, index) => (
         <RouteCard
           key={route.id}
           route={route}
           isSelected={route.id === selectedRouteId}
+          isBest={index === 0}
           onSelect={() => setSelectedRouteId(route.id)}
         />
       ))}
