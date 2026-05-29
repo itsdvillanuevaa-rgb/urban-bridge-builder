@@ -21,6 +21,10 @@ This file tracks the implementation status of all application features and scena
 - [x] Scenario: Autocomplete search query for locations using OpenStreetMap Nominatim
 - [x] Scenario: Select destination and display suggested route options
 - [x] Scenario: Manage search history
+- [x] Scenario: Track user real-time geolocation on map
+- [x] Scenario: Personalize route scoring based on onboarding preferences
+- [x] Scenario: Display accessibility explainability tags on route cards
+- [x] Scenario: Render selected route polyline path on Leaflet map
 
 ## Feature: Accessibility Alerts Feed (#6)
 - [x] Scenario: View all alerts sorted and filter by severity
