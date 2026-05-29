@@ -22,13 +22,13 @@ Implement a search input that retrieves location suggestions from OpenStreetMap 
 
 Requirements:
 
-* Use the Nominatim Search API.
-* Trigger requests only after 3 characters.
-* Debounce requests by 300ms.
-* Limit results to 5 suggestions.
-* Display loading state.
-* Handle API failures gracefully.
-* Show empty state when no results are found.
+- Use the Nominatim Search API.
+- Trigger requests only after 3 characters.
+- Debounce requests by 300ms.
+- Limit results to 5 suggestions.
+- Display loading state.
+- Handle API failures gracefully.
+- Show empty state when no results are found.
 
 Expected API example:
 
@@ -36,17 +36,17 @@ GET https://nominatim.openstreetmap.org/search?q={query}&format=jsonv2&limit=5
 
 Deliverables:
 
-* Search component.
-* API service layer.
-* Type definitions.
-* Error handling.
-* Loading state.
+- Search component.
+- API service layer.
+- Type definitions.
+- Error handling.
+- Loading state.
 
 Acceptance Criteria:
 
-* Typing "Tijuana" shows location suggestions.
-* Clicking a suggestion selects the destination.
-* No duplicate requests are generated during rapid typing.
+- Typing "Tijuana" shows location suggestions.
+- Clicking a suggestion selects the destination.
+- No duplicate requests are generated during rapid typing.
 
 ---
 
@@ -54,33 +54,33 @@ Acceptance Criteria:
 
 After selecting a destination:
 
-* Store destination in component state.
-* Display route suggestions panel.
+- Store destination in component state.
+- Display route suggestions panel.
 
 Generate at least 3 route options:
 
-* Fastest Route
-* Most Accessible Route
-* Alternative Route
+- Fastest Route
+- Most Accessible Route
+- Alternative Route
 
 Each route card must include:
 
-* Estimated distance.
-* Estimated duration.
-* Accessibility score.
-* Warnings about obstacles if available.
+- Estimated distance.
+- Estimated duration.
+- Accessibility score.
+- Warnings about obstacles if available.
 
 If a routing backend is not implemented:
 
-* Create a RouteRecommendationService abstraction.
-* Create mock provider implementation.
-* Document integration points for future OSRM/OpenRouteService integration.
+- Create a RouteRecommendationService abstraction.
+- Create mock provider implementation.
+- Document integration points for future OSRM/OpenRouteService integration.
 
 Acceptance Criteria:
 
-* Selecting a location immediately displays route options.
-* Route cards render correctly.
-* Architecture allows replacing mock data with real routing APIs.
+- Selecting a location immediately displays route options.
+- Route cards render correctly.
+- Architecture allows replacing mock data with real routing APIs.
 
 ---
 
@@ -90,30 +90,30 @@ Implement persistent search history.
 
 Requirements:
 
-* Save destination searches.
-* Persist data locally.
-* Maximum 10 records.
-* Most recent first.
-* Remove duplicates.
-* Allow clearing history.
+- Save destination searches.
+- Persist data locally.
+- Maximum 10 records.
+- Most recent first.
+- Remove duplicates.
+- Allow clearing history.
 
 Storage:
 
-* AsyncStorage (React Native)
-* localStorage (Web)
+- AsyncStorage (React Native)
+- localStorage (Web)
 
 Functions required:
 
-* saveSearch()
-* getSearchHistory()
-* removeDuplicateSearch()
-* clearSearchHistory()
+- saveSearch()
+- getSearchHistory()
+- removeDuplicateSearch()
+- clearSearchHistory()
 
 Acceptance Criteria:
 
-* Previous searches appear when reopening the screen.
-* Selecting a history item repeats the search.
-* History survives application restart.
+- Previous searches appear when reopening the screen.
+- Selecting a history item repeats the search.
+- History survives application restart.
 
 ---
 
@@ -144,14 +144,14 @@ route.ts
 
 ## Code Quality Rules
 
-* Use TypeScript strict mode.
-* Avoid duplicated logic.
-* Separate UI from business logic.
-* Use reusable hooks.
-* Include error handling.
-* Include loading states.
-* Include empty states.
-* Add comments only when necessary.
+- Use TypeScript strict mode.
+- Avoid duplicated logic.
+- Separate UI from business logic.
+- Use reusable hooks.
+- Include error handling.
+- Include loading states.
+- Include empty states.
+- Add comments only when necessary.
 
 ---
 

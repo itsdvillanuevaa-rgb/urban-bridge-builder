@@ -13,7 +13,6 @@ const mobility = [
   { id: "silla-electrica", label: "Silla eléctrica", icon: "🛞" },
   { id: "andador", label: "Andador", icon: "🦯" },
   { id: "baston", label: "Bastón", icon: "🚶" },
-  { id: "baja-vision", label: "Baja visión", icon: "👁️" },
   { id: "sin-ayuda", label: "Sin ayuda", icon: "🧍" },
 ];
 
@@ -21,6 +20,7 @@ const avoid = [
   { id: "escaleras", label: "Escaleras" },
   { id: "pendientes", label: "Pendientes" },
   { id: "banquetas", label: "Banquetas rotas" },
+  { id: "cruces-sin-semaforo", label: "Cruces sin semáforo" },
   { id: "ruido", label: "Ruido excesivo" },
   { id: "trafico", label: "Tráfico intenso" },
   { id: "construccion", label: "Zonas en construcción" },
@@ -39,11 +39,23 @@ const routePreferences = [
   { id: "sombreado", label: "Con sombra" },
 ];
 
-const civicParticipation = [
-  { id: "reportar", label: "Reportar obstáculos" },
-  { id: "votar", label: "Votar en mejoras" },
-  { id: "compartir", label: "Compartir rutas" },
-  { id: "colaborar", label: "Colaborar con la comunidad" },
+const restStopsOptions = [
+  { id: "si", label: "Sí" },
+  { id: "no", label: "No" },
+];
+
+const travelCompanionOptions = [
+  { id: "solo", label: "Solo" },
+  { id: "con-acompanante", label: "Con acompañante" },
+  { id: "depende", label: "Depende de la situación" },
+];
+
+const appInteractionPreferences = [
+  { id: "tactil", label: "Táctil sin dificultad" },
+  { id: "botones-grandes", label: "Prefiero botones grandes" },
+  { id: "comandos-voz", label: "Prefiero usar comandos de voz" },
+  { id: "apoyo-persona", label: "Uso apoyo de otra persona" },
+  { id: "tecnologia-asistiva", label: "Uso tecnología asistiva" },
 ];
 
 function EncuestaPage() {
@@ -51,8 +63,16 @@ function EncuestaPage() {
   const [av, setAv] = useState<string[]>([]);
   const [autonomy, setAutonomy] = useState<string>("");
   const [routes, setRoutes] = useState<string[]>([]);
-  const [civic, setCivic] = useState<string[]>([]);
+  const [needsRest, setNeedsRest] = useState<string>("");
+  const [travelCompanion, setTravelCompanion] = useState<string>("");
+  const [appInteraction, setAppInteraction] = useState<string>("");
+
   const navigate = useNavigate();
+
+  // Retrieve user session dynamically for greeting
+  const session =
+    typeof window !== "undefined" ? JSON.parse(localStorage.getItem("aa.session") || "{}") : {};
+  const nombre = session.firstName || "Te damos la bienvenida";
 
   const toggle = (set: string[], setSet: (v: string[]) => void, id: string) => {
     setSet(set.includes(id) ? set.filter((x) => x !== id) : [...set, id]);
@@ -67,32 +87,60 @@ function EncuestaPage() {
       alert("Por favor selecciona al menos un obstáculo a evitar");
       return;
     }
+    if (autonomy === "") {
+      alert("Por favor selecciona tu nivel de autonomía");
+      return;
+    }
+    if (needsRest === "") {
+      alert("Por favor indica si necesitas zonas de descanso");
+      return;
+    }
+    if (travelCompanion === "") {
+      alert("Por favor indica cómo sueles desplazarte");
+      return;
+    }
+    if (appInteraction === "") {
+      alert("Por favor indica cómo prefieres interactuar con la aplicación");
+      return;
+    }
+
     if (typeof window !== "undefined") {
+      const userProfile = {
+        firstName: session.firstName || "",
+        lastName: session.lastName || "",
+        email: session.email || "",
+        mobilityType: mob,
+        avoidedBarriers: av,
+        routePreference: routes,
+        autonomyLevel: autonomy,
+        needsRestStops: needsRest === "si",
+        travelCompanionType: travelCompanion,
+        appInteractionPreference: appInteraction,
+      };
+
+      localStorage.setItem("aa.profile", JSON.stringify(userProfile));
       localStorage.setItem("aa.onboarded", "1");
-      localStorage.setItem("aa.profile", JSON.stringify({ 
-        mobility: mob, 
-        avoid: av,
-        autonomy,
-        routePreferences: routes,
-        civicParticipation: civic
-      }));
     }
     navigate({ to: "/" });
   };
 
   return (
     <div className="absolute inset-0 flex flex-col bg-background overflow-y-auto">
-      <div className="px-6 pt-10 pb-4 safe-top">
+      <div className="px-6 pt-10 pb-4 safe-top animate-fade-up">
         <p className="text-sm font-semibold text-brand uppercase tracking-wider">Paso final</p>
-        <h2 className="mt-2 text-3xl font-bold tracking-tight">Cuéntanos sobre ti</h2>
+        <h2 className="mt-2 text-3xl font-bold tracking-tight">¡Hola, {nombre}!</h2>
+        <p className="mt-2 text-lg font-semibold text-foreground">
+          Terminemos de personalizar tu experiencia.
+        </p>
         <p className="mt-2 text-base text-muted-foreground">
-          Personalizaremos tus rutas y alertas según tus necesidades.
+          Tus respuestas nos ayudarán a ofrecer rutas y alertas más relevantes para ti.
         </p>
       </div>
 
-      <div className="flex-1 px-6 space-y-8 pb-6">
+      <div className="flex-1 px-6 space-y-8 pb-6 animate-fade-up">
+        {/* Mobility Mode */}
         <section>
-          <h3 className="text-lg font-semibold mb-3">¿Cómo te mueves?</h3>
+          <h3 className="text-lg font-bold mb-3">¿Cómo te mueves?</h3>
           <div className="grid grid-cols-2 gap-3">
             {mobility.map((m) => {
               const sel = mob.includes(m.id);
@@ -110,7 +158,7 @@ function EncuestaPage() {
                   ].join(" ")}
                 >
                   {sel && (
-                    <span className="absolute top-2 right-2 size-5 rounded-full bg-brand text-brand-foreground grid place-items-center">
+                    <span className="absolute top-2 right-2 size-5 rounded-full bg-brand text-brand-foreground grid place-items-center animate-pop-in">
                       <Check className="size-3" aria-hidden />
                     </span>
                   )}
@@ -124,8 +172,9 @@ function EncuestaPage() {
           </div>
         </section>
 
+        {/* Barriers to Avoid */}
         <section>
-          <h3 className="text-lg font-semibold mb-3">¿Qué prefieres evitar?</h3>
+          <h3 className="text-lg font-bold mb-3">¿Qué prefieres evitar?</h3>
           <div className="flex flex-wrap gap-2">
             {avoid.map((a) => {
               const sel = av.includes(a.id);
@@ -136,7 +185,7 @@ function EncuestaPage() {
                   onClick={() => toggle(av, setAv, a.id)}
                   aria-pressed={sel}
                   className={[
-                    "h-12 px-5 rounded-full ring-1 font-semibold text-sm transition-all",
+                    "h-12 px-5 rounded-full ring-1 font-semibold text-sm transition-all shadow-sm",
                     sel
                       ? "bg-brand text-brand-foreground ring-brand"
                       : "bg-card text-foreground ring-border hover:bg-muted",
@@ -149,8 +198,9 @@ function EncuestaPage() {
           </div>
         </section>
 
+        {/* Autonomy Level */}
         <section>
-          <h3 className="text-lg font-semibold mb-3">Nivel de autonomía</h3>
+          <h3 className="text-lg font-bold mb-3">Nivel de autonomía</h3>
           <div className="grid grid-cols-1 gap-2">
             {autonomyLevels.map((a) => {
               const sel = autonomy === a.id;
@@ -161,21 +211,106 @@ function EncuestaPage() {
                   onClick={() => setAutonomy(a.id)}
                   aria-pressed={sel}
                   className={[
-                    "h-12 px-5 rounded-xl ring-1 font-semibold text-sm transition-all text-left",
+                    "h-12 px-5 rounded-xl ring-1 font-semibold text-sm transition-all text-left flex items-center justify-between shadow-sm",
                     sel
                       ? "bg-brand text-brand-foreground ring-brand"
                       : "bg-card text-foreground ring-border hover:bg-muted",
                   ].join(" ")}
                 >
-                  {a.label}
+                  <span>{a.label}</span>
+                  {sel && <Check className="size-4 shrink-0 text-brand-foreground" />}
                 </button>
               );
             })}
           </div>
         </section>
 
+        {/* Rest Stops Need */}
         <section>
-          <h3 className="text-lg font-semibold mb-3">Preferencias de ruta</h3>
+          <h3 className="text-lg font-bold mb-3">
+            ¿Necesitas lugares de descanso durante tus recorridos?
+          </h3>
+          <div className="grid grid-cols-2 gap-3">
+            {restStopsOptions.map((o) => {
+              const sel = needsRest === o.id;
+              return (
+                <button
+                  key={o.id}
+                  type="button"
+                  onClick={() => setNeedsRest(o.id)}
+                  aria-pressed={sel}
+                  className={[
+                    "h-12 px-5 rounded-xl ring-1 font-semibold text-sm transition-all shadow-sm flex items-center justify-center gap-2",
+                    sel
+                      ? "bg-brand text-brand-foreground ring-brand"
+                      : "bg-card text-foreground ring-border hover:bg-muted",
+                  ].join(" ")}
+                >
+                  <span>{o.label}</span>
+                  {sel && <Check className="size-4 text-brand-foreground" />}
+                </button>
+              );
+            })}
+          </div>
+        </section>
+
+        {/* Travel Companion */}
+        <section>
+          <h3 className="text-lg font-bold mb-3">¿Cómo sueles desplazarte?</h3>
+          <div className="grid grid-cols-1 gap-2">
+            {travelCompanionOptions.map((o) => {
+              const sel = travelCompanion === o.id;
+              return (
+                <button
+                  key={o.id}
+                  type="button"
+                  onClick={() => setTravelCompanion(o.id)}
+                  aria-pressed={sel}
+                  className={[
+                    "h-12 px-5 rounded-xl ring-1 font-semibold text-sm transition-all text-left flex items-center justify-between shadow-sm",
+                    sel
+                      ? "bg-brand text-brand-foreground ring-brand"
+                      : "bg-card text-foreground ring-border hover:bg-muted",
+                  ].join(" ")}
+                >
+                  <span>{o.label}</span>
+                  {sel && <Check className="size-4 shrink-0 text-brand-foreground" />}
+                </button>
+              );
+            })}
+          </div>
+        </section>
+
+        {/* App Interaction Preference */}
+        <section>
+          <h3 className="text-lg font-bold mb-3">¿Cómo prefieres interactuar con la aplicación?</h3>
+          <div className="grid grid-cols-1 gap-2">
+            {appInteractionPreferences.map((p) => {
+              const sel = appInteraction === p.id;
+              return (
+                <button
+                  key={p.id}
+                  type="button"
+                  onClick={() => setAppInteraction(p.id)}
+                  aria-pressed={sel}
+                  className={[
+                    "h-12 px-5 rounded-xl ring-1 font-semibold text-sm transition-all text-left flex items-center justify-between shadow-sm",
+                    sel
+                      ? "bg-brand text-brand-foreground ring-brand"
+                      : "bg-card text-foreground ring-border hover:bg-muted",
+                  ].join(" ")}
+                >
+                  <span>{p.label}</span>
+                  {sel && <Check className="size-4 shrink-0 text-brand-foreground" />}
+                </button>
+              );
+            })}
+          </div>
+        </section>
+
+        {/* Route Preferences */}
+        <section>
+          <h3 className="text-lg font-bold mb-3">Preferencias de ruta</h3>
           <div className="flex flex-wrap gap-2">
             {routePreferences.map((r) => {
               const sel = routes.includes(r.id);
@@ -186,7 +321,7 @@ function EncuestaPage() {
                   onClick={() => toggle(routes, setRoutes, r.id)}
                   aria-pressed={sel}
                   className={[
-                    "h-12 px-5 rounded-full ring-1 font-semibold text-sm transition-all",
+                    "h-12 px-5 rounded-full ring-1 font-semibold text-sm transition-all shadow-sm",
                     sel
                       ? "bg-brand text-brand-foreground ring-brand"
                       : "bg-card text-foreground ring-border hover:bg-muted",
@@ -198,34 +333,9 @@ function EncuestaPage() {
             })}
           </div>
         </section>
-
-        <section>
-          <h3 className="text-lg font-semibold mb-3">Participación cívica</h3>
-          <div className="flex flex-wrap gap-2">
-            {civicParticipation.map((c) => {
-              const sel = civic.includes(c.id);
-              return (
-                <button
-                  key={c.id}
-                  type="button"
-                  onClick={() => toggle(civic, setCivic, c.id)}
-                  aria-pressed={sel}
-                  className={[
-                    "h-12 px-5 rounded-full ring-1 font-semibold text-sm transition-all",
-                    sel
-                      ? "bg-brand text-brand-foreground ring-brand"
-                      : "bg-card text-foreground ring-border hover:bg-muted",
-                  ].join(" ")}
-                >
-                  {c.label}
-                </button>
-              );
-            })}
-          </div>
-        </section>
       </div>
 
-      <div className="px-6 pb-8 safe-bottom bg-background sticky bottom-0">
+      <div className="px-6 pb-8 safe-bottom bg-background sticky bottom-0 border-t border-border pt-3">
         <BigButton onClick={submit}>Personalizar mi mapa</BigButton>
       </div>
     </div>

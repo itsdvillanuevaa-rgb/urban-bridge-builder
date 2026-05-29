@@ -150,13 +150,13 @@ Ask the AI to develop the code **scenario by scenario**. Each scenario is review
 
 ## Summary
 
-| Step | Action           | Artifact                  | GitHub Action                 |
-| ---- | ---------------- | ------------------------- | ----------------------------- |
-| 1    | Define the idea  | High-level description    | -                             |
-| 2    | Generate Gherkin | Scenarios Gherkin         | -                             |
-| 3    | Persist and Sync | `docs/features/*.feature` | **Create Issue + Milestone**  |
-| 4    | Create tracker   | `PROGRESS.md`             | **Add to Project**            |
-| 5    | Develop scenario | Code + atomic commits     | **Push & Create PR**          |
+| Step | Action           | Artifact                  | GitHub Action                |
+| ---- | ---------------- | ------------------------- | ---------------------------- |
+| 1    | Define the idea  | High-level description    | -                            |
+| 2    | Generate Gherkin | Scenarios Gherkin         | -                            |
+| 3    | Persist and Sync | `docs/features/*.feature` | **Create Issue + Milestone** |
+| 4    | Create tracker   | `PROGRESS.md`             | **Add to Project**           |
+| 5    | Develop scenario | Code + atomic commits     | **Push & Create PR**         |
 
 ---
 

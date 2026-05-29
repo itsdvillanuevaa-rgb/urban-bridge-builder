@@ -9,13 +9,14 @@ This document outlines a methodical, repeatable, and technology-agnostic process
 Describe the core concept of the project or milestone in plain, clear language. Do not focus on technical details, libraries, or architecture. Instead, focus on the functional outcome.
 
 ### Key Rules:
+
 - **Focus on the immediate milestone:** Do not plan the entire application lifecycle yet. Define a small, deliverable slice.
 - **Keep it human-readable:** Use plain language and avoid unnecessary technical jargon.
-- **Focus on *what*, not *how*:** Describe what the program should do, not how it should be implemented.
+- **Focus on _what_, not _how_:** Describe what the program should do, not how it should be implemented.
 
 > [!NOTE]
 > **Example Idea:**
-> *"I want a simple task manager application that stores data locally, allows users to categorize tasks with tags, and lets them filter tasks by those tags."*
+> _"I want a simple task manager application that stores data locally, allows users to categorize tasks with tags, and lets them filter tasks by those tags."_
 
 ---
 
@@ -24,15 +25,17 @@ Describe the core concept of the project or milestone in plain, clear language. 
 Provide the high-level idea to your AI assistant and ask it to generate structured **features** and **scenarios** using the **Gherkin syntax** (Given-When-Then format).
 
 ### Why Gherkin?
+
 - **Universal Standard:** Clearly defines application behavior in a structured format.
 - **BDD/TDD Friendly:** Directly maps functional requirements to automated tests (Behavior-Driven/Test-Driven Development).
 - **Shared Vocabulary:** Acts as a bridge of understanding between developers, business stakeholders, and AI agents.
 
 > [!TIP]
 > **Example Prompt:**
-> *"From this product idea, generate features and scenarios in Gherkin format that cover the core functionality of the first milestone."*
+> _"From this product idea, generate features and scenarios in Gherkin format that cover the core functionality of the first milestone."_
 
 **Expected Output Example:**
+
 ```gherkin
 Feature: Task Tagging
   As a user
@@ -57,6 +60,7 @@ Feature: Task Tagging
 To ensure that the development context is never lost, features must be saved locally and synchronized with your project management/issue tracking system.
 
 ### 3.1. Persist Locally
+
 Store each feature in a dedicated features directory (e.g., `docs/features/` or `features/`). This acts as the persistent single source of truth for the codebase, preventing context loss if the AI chat session is reset.
 
 ```text
@@ -69,6 +73,7 @@ project-root/
 ```
 
 ### 3.2. Synchronize with the Issue Tracker (Mandatory)
+
 Every feature file should correspond to a trackable issue/ticket in your issue tracking system (e.g., GitHub Issues, Jira, GitLab Issues, Trello).
 
 1. **Create the Ticket:** Import or copy the Gherkin feature definition into a new issue.
@@ -82,14 +87,17 @@ Every feature file should correspond to a trackable issue/ticket in your issue t
 Create a `PROGRESS.md` file at the root of the project. This file acts as a lightweight status board showing exactly what has been completed, what is in progress, and what remains.
 
 ### Recommended Structure:
+
 ```markdown
 # Project Progress Tracker
 
 ## Feature: Task Tagging (#102)
+
 - [x] Scenario: Successfully adding a tag to a task
 - [ ] Scenario: Preventing duplicate tags on the same task
 
 ## Feature: Task Filtering (#103)
+
 - [ ] Scenario: Filter tasks by a single tag
 - [ ] Scenario: Filter tasks by multiple tags
 ```
@@ -104,6 +112,7 @@ Create a `PROGRESS.md` file at the root of the project. This file acts as a ligh
 Develop the codebase incrementally, one Gherkin scenario at a time. The AI assistant should follow this loop strictly:
 
 ### The Development Loop:
+
 1. **Identify the Target:** Read `PROGRESS.md` to identify the next pending scenario.
 2. **Gather Context:** Read the corresponding `.feature` file to understand the inputs, actions, and expected results.
 3. **Implement:** Write the minimal code necessary to make the scenario pass.
@@ -116,13 +125,13 @@ Develop the codebase incrementally, one Gherkin scenario at a time. The AI assis
 
 ## Summary of the Process
 
-| Step | Action | Artifact Created/Updated | Tracked In |
-| :--- | :--- | :--- | :--- |
-| **1** | Define the Idea | High-level natural language description | Project documentation / initial prompt |
-| **2** | Generate Scenarios | Gherkin features & scenarios | Chat context / clipboard |
-| **3** | Persist & Sync | `.feature` files under `docs/features/` | Issue Tracker (GitHub, Jira, etc.) |
-| **4** | Create Tracker | `PROGRESS.md` file in root directory | Project Board / Project Workspace |
-| **5** | Develop Scenarios | Code, test suite, and atomic git commits | Pull Request / Branch merges |
+| Step  | Action             | Artifact Created/Updated                 | Tracked In                             |
+| :---- | :----------------- | :--------------------------------------- | :------------------------------------- |
+| **1** | Define the Idea    | High-level natural language description  | Project documentation / initial prompt |
+| **2** | Generate Scenarios | Gherkin features & scenarios             | Chat context / clipboard               |
+| **3** | Persist & Sync     | `.feature` files under `docs/features/`  | Issue Tracker (GitHub, Jira, etc.)     |
+| **4** | Create Tracker     | `PROGRESS.md` file in root directory     | Project Board / Project Workspace      |
+| **5** | Develop Scenarios  | Code, test suite, and atomic git commits | Pull Request / Branch merges           |
 
 ---
 

@@ -1,5 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { MapCanvas } from "@/components/map-canvas";
 import { AlertCard } from "@/components/alert-card";
 import { BigButton } from "@/components/big-button";
@@ -21,11 +21,33 @@ export const Route = createFileRoute("/")({
 
 function HomePage() {
   const navigate = useNavigate();
+  const [isInitialized, setIsInitialized] = useState(false);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
-    if (!localStorage.getItem("aa.onboarded")) navigate({ to: "/splash" });
+
+    const splashShown = sessionStorage.getItem("aa.splashShown");
+    const session = localStorage.getItem("aa.session");
+    const onboarded = localStorage.getItem("aa.onboarded");
+
+    if (!splashShown) {
+      navigate({ to: "/splash" });
+    } else if (!session) {
+      if (onboarded) {
+        navigate({ to: "/login" });
+      } else {
+        navigate({ to: "/onboarding" });
+      }
+    } else if (!onboarded) {
+      navigate({ to: "/encuesta" });
+    } else {
+      setIsInitialized(true);
+    }
   }, [navigate]);
+
+  if (!isInitialized) {
+    return <div className="absolute inset-0 bg-background" />;
+  }
 
   return (
     <div className="absolute inset-0 flex flex-col">

@@ -58,7 +58,7 @@ function ReportarPage() {
           default:
             setLocationError("Error al obtener ubicación");
         }
-      }
+      },
     );
   }, []);
 
@@ -151,7 +151,9 @@ function ReportarPage() {
           </div>
 
           <div className="bg-card rounded-2xl ring-1 ring-border p-4">
-            <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Dirección</p>
+            <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+              Dirección
+            </p>
             {latitude !== null && longitude !== null ? (
               <>
                 <p className="mt-1 text-base font-semibold">

@@ -14,6 +14,7 @@ import { Route as RutasRouteImport } from './routes/rutas'
 import { Route as ReportarRouteImport } from './routes/reportar'
 import { Route as PerfilRouteImport } from './routes/perfil'
 import { Route as OnboardingRouteImport } from './routes/onboarding'
+import { Route as LoginRouteImport } from './routes/login'
 import { Route as EncuestaRouteImport } from './routes/encuesta'
 import { Route as AlertasRouteImport } from './routes/alertas'
 import { Route as IndexRouteImport } from './routes/index'
@@ -43,6 +44,11 @@ const OnboardingRoute = OnboardingRouteImport.update({
   path: '/onboarding',
   getParentRoute: () => rootRouteImport,
 } as any)
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const EncuestaRoute = EncuestaRouteImport.update({
   id: '/encuesta',
   path: '/encuesta',
@@ -63,6 +69,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/alertas': typeof AlertasRoute
   '/encuesta': typeof EncuestaRoute
+  '/login': typeof LoginRoute
   '/onboarding': typeof OnboardingRoute
   '/perfil': typeof PerfilRoute
   '/reportar': typeof ReportarRoute
@@ -73,6 +80,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/alertas': typeof AlertasRoute
   '/encuesta': typeof EncuestaRoute
+  '/login': typeof LoginRoute
   '/onboarding': typeof OnboardingRoute
   '/perfil': typeof PerfilRoute
   '/reportar': typeof ReportarRoute
@@ -84,6 +92,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/alertas': typeof AlertasRoute
   '/encuesta': typeof EncuestaRoute
+  '/login': typeof LoginRoute
   '/onboarding': typeof OnboardingRoute
   '/perfil': typeof PerfilRoute
   '/reportar': typeof ReportarRoute
@@ -96,6 +105,7 @@ export interface FileRouteTypes {
     | '/'
     | '/alertas'
     | '/encuesta'
+    | '/login'
     | '/onboarding'
     | '/perfil'
     | '/reportar'
@@ -106,6 +116,7 @@ export interface FileRouteTypes {
     | '/'
     | '/alertas'
     | '/encuesta'
+    | '/login'
     | '/onboarding'
     | '/perfil'
     | '/reportar'
@@ -116,6 +127,7 @@ export interface FileRouteTypes {
     | '/'
     | '/alertas'
     | '/encuesta'
+    | '/login'
     | '/onboarding'
     | '/perfil'
     | '/reportar'
@@ -127,6 +139,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AlertasRoute: typeof AlertasRoute
   EncuestaRoute: typeof EncuestaRoute
+  LoginRoute: typeof LoginRoute
   OnboardingRoute: typeof OnboardingRoute
   PerfilRoute: typeof PerfilRoute
   ReportarRoute: typeof ReportarRoute
@@ -171,6 +184,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof OnboardingRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/encuesta': {
       id: '/encuesta'
       path: '/encuesta'
@@ -199,6 +219,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AlertasRoute: AlertasRoute,
   EncuestaRoute: EncuestaRoute,
+  LoginRoute: LoginRoute,
   OnboardingRoute: OnboardingRoute,
   PerfilRoute: PerfilRoute,
   ReportarRoute: ReportarRoute,

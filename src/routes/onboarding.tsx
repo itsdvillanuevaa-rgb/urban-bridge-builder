@@ -36,7 +36,7 @@ function OnboardingPage() {
   const slide = slides[i];
 
   const next = () => {
-    if (isLast) navigate({ to: "/encuesta" });
+    if (isLast) navigate({ to: "/login" });
     else setI(i + 1);
   };
 
@@ -45,7 +45,7 @@ function OnboardingPage() {
       <div className="flex justify-end p-4 safe-top">
         <button
           type="button"
-          onClick={() => navigate({ to: "/encuesta" })}
+          onClick={() => navigate({ to: "/login" })}
           className="text-sm font-semibold text-muted-foreground px-3 py-2"
         >
           Saltar

@@ -11,6 +11,7 @@ import {
 import appCss from "../styles.css?url";
 import { PhoneFrame } from "@/components/phone-frame";
 import { BottomNav } from "@/components/bottom-nav";
+import { Toaster } from "@/components/ui/sonner";
 
 function NotFoundComponent() {
   return (
@@ -113,6 +114,7 @@ function RootComponent() {
         </main>
         <BottomNav />
       </PhoneFrame>
+      <Toaster />
     </QueryClientProvider>
   );
 }
