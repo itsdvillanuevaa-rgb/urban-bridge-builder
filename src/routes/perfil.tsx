@@ -17,9 +17,11 @@ const statusBadge = {
 function PerfilPage() {
   const navigate = useNavigate();
   return (
-    <div className="min-h-dvh flex flex-col bg-background pb-24">
+    <div className="min-h-dvh flex flex-col bg-background">
       <TopBar
         title="Mi perfil"
+        back={true}
+        centerTitle={true}
         right={
           <button
             type="button"
