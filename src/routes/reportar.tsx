@@ -5,6 +5,7 @@ import { BigButton } from "@/components/big-button";
 import { Camera, Check, Mic, MicOff } from "lucide-react";
 import type { ReportCategory } from "@/data/mock";
 import { addReport, generateReportId } from "@/data/storage";
+import { createReport } from "@/data/reports.supabase";
 
 // Type declaration for Web Speech API
 declare global {
@@ -187,7 +188,7 @@ function ReportarPage() {
     }
   };
 
-  const handleSubmitReport = () => {
+  const handleSubmitReport = async () => {
     if (!cat) return;
 
     const report = {
@@ -204,6 +205,29 @@ function ReportarPage() {
     };
 
     addReport(report);
+
+    try {
+      const result = await createReport({
+        category: cat,
+        description: description || "",
+        address: address || null,
+        lat: latitude,
+        lng: longitude,
+        severity: severity,
+        photo_url: photo || null,
+        status: "activo",
+      });
+
+      if (result) {
+        console.info("Reporte guardado en Supabase");
+      } else {
+        console.info("Supabase falló, usando fallback local");
+      }
+    } catch (error) {
+      console.error("Error saving report to Supabase:", error);
+      console.info("Supabase falló, usando fallback local");
+    }
+
     setStep(3);
   };
   return (

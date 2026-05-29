@@ -25,6 +25,7 @@ export type CreateReportInput = {
   lng: number | null;
   severity: 'alta' | 'media' | 'baja';
   photo_url: string | null;
+  status?: 'nuevo' | 'pendiente' | 'activo' | 'verificado' | 'resuelto';
 };
 
 export type UpdateReportInput = Partial<{
@@ -45,6 +46,11 @@ export type UpdateReportInput = Partial<{
 export const createReport = async (
   reportData: CreateReportInput
 ): Promise<SupabaseReport | null> => {
+  if (!supabase) {
+    console.warn('Supabase client not available');
+    return null;
+  }
+
   try {
     const { data, error } = await supabase
       .from('reports')
@@ -56,7 +62,7 @@ export const createReport = async (
         lng: reportData.lng,
         severity: reportData.severity,
         photo_url: reportData.photo_url,
-        status: 'nuevo',
+        status: reportData.status || 'nuevo',
         validations_count: 0,
       })
       .select()
@@ -78,6 +84,11 @@ export const createReport = async (
  * Get all reports from Supabase, ordered by created_at descending
  */
 export const getReports = async (): Promise<SupabaseReport[]> => {
+  if (!supabase) {
+    console.warn('Supabase client not available');
+    return [];
+  }
+
   try {
     const { data, error } = await supabase
       .from('reports')
@@ -107,6 +118,11 @@ export const subscribeToReports = (
     old: SupabaseReport | null;
   }) => void
 ) => {
+  if (!supabase) {
+    console.warn('Supabase client not available');
+    return { unsubscribe: () => {} };
+  }
+
   try {
     const subscription = supabase
       .channel('reports-changes')
@@ -148,6 +164,11 @@ export const updateReport = async (
   reportId: string,
   data: UpdateReportInput
 ): Promise<SupabaseReport | null> => {
+  if (!supabase) {
+    console.warn('Supabase client not available');
+    return null;
+  }
+
   try {
     const { data: updatedData, error } = await supabase
       .from('reports')
@@ -176,6 +197,11 @@ export const confirmReport = async (
   reportId: string,
   deviceId: string
 ): Promise<{ success: boolean; validations_count?: number; error?: string }> => {
+  if (!supabase) {
+    console.warn('Supabase client not available');
+    return { success: false, error: 'Supabase client not available' };
+  }
+
   try {
     // Try to call the RPC function if it exists
     const { data, error } = await supabase.rpc('confirm_alert', {
