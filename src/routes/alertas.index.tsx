@@ -1,12 +1,14 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState, useEffect } from "react";
+import { TopBar } from "@/components/top-bar";
 import { AlertCard } from "@/components/alert-card";
 import { alerts, type Report, type Alert } from "@/data/mock";
 import { getReports } from "@/data/storage";
 import { categoryMeta } from "@/data/mock";
-import { ArrowLeft, Clock, MapPin } from "lucide-react";
+import { CheckCircle2, Clock, MapPin } from "lucide-react";
 
-export const Route = createFileRoute("/alertas")({
+export const Route = createFileRoute("/alertas/")({
+  head: () => ({ meta: [{ title: "Alertas cercanas" }] }),
   component: AlertasPage,
 });
 
@@ -91,7 +93,6 @@ function AlertasPage() {
 
   useEffect(() => {
     const loadedReports = getReports();
-    console.info("Reportes cargados en Alertas:", loadedReports.length);
     setReports(loadedReports);
   }, []);
 
@@ -132,26 +133,17 @@ function AlertasPage() {
   });
 
   return (
-    <div className="h-full flex flex-col bg-background overflow-hidden">
-      <div className="px-4 pt-4 pb-2">
-        <button
-          type="button"
-          onClick={() => navigate({ to: "/" })}
-          className="size-10 rounded-full bg-card ring-1 ring-border grid place-items-center hover:bg-muted transition-colors"
-          aria-label="Regresar"
-        >
-          <ArrowLeft className="size-5" aria-hidden />
-        </button>
-      </div>
+    <div className="min-h-dvh flex flex-col bg-background pb-24">
+      <TopBar title="Alertas" />
 
-      <div className="px-4 pt-2 max-w-md mx-auto w-full">
+      <div className="px-4 pt-2">
         <p className="text-base text-muted-foreground">
           <span className="font-bold text-foreground">{filteredAlerts.length}</span>{" "}
           alertas activas a menos de 1 km
         </p>
       </div>
 
-      <div className="px-4 pt-4 flex gap-2 overflow-x-auto no-scrollbar max-w-md mx-auto w-full">
+      <div className="px-4 pt-4 flex gap-2 overflow-x-auto no-scrollbar">
         {filters.map((f) => {
           const active = selectedFilter === f;
           return (
@@ -172,33 +164,31 @@ function AlertasPage() {
         })}
       </div>
 
-      <div className="flex-1 overflow-y-auto px-4 pt-4 pb-16 max-w-md mx-auto w-full">
-        <div className="space-y-3">
-          {filteredAlerts.length > 0 ? (
-            <>
-              {filteredReports.map((r) => (
-                <ReportCard key={r.id} report={r} />
-              ))}
-              {filteredMockAlerts.map((a) => (
-                <AlertCard 
-                  key={a.id} 
-                  alert={a} 
-                  onClick={() => {
-                    navigate({
-                      to: "/alertas/$id",
-                      params: { id: a.id },
-                      search: { item: a },
-                    });
-                  }}
-                />
-              ))}
-            </>
-          ) : (
-            <div className="bg-card rounded-2xl ring-1 ring-border p-6 text-center text-sm text-muted-foreground">
-              No hay alertas con gravedad "{selectedFilter}" en la zona.
-            </div>
-          )}
-        </div>
+      <div className="px-4 pt-4 space-y-3">
+        {filteredAlerts.length > 0 ? (
+          <>
+            {filteredReports.map((r) => (
+              <ReportCard key={r.id} report={r} />
+            ))}
+            {filteredMockAlerts.map((a) => (
+              <AlertCard 
+                key={a.id} 
+                alert={a} 
+                onClick={() => {
+                  navigate({
+                    to: "/alertas/$id",
+                    params: { id: a.id },
+                    search: { item: a },
+                  });
+                }}
+              />
+            ))}
+          </>
+        ) : (
+          <div className="bg-card rounded-2xl ring-1 ring-border p-6 text-center text-sm text-muted-foreground">
+            No hay alertas con gravedad "{selectedFilter}" en la zona.
+          </div>
+        )}
       </div>
     </div>
   );

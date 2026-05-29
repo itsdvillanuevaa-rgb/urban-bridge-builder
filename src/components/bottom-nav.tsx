@@ -7,10 +7,10 @@ const items: {
   icon: typeof Map;
   primary?: boolean;
 }[] = [
-  { to: "/", label: "Mapa", icon: Map },
-  { to: "/reportar", label: "Reportar", icon: Plus, primary: true },
-  { to: "/perfil", label: "Perfil", icon: User },
-];
+    { to: "/", label: "Mapa", icon: Map },
+    { to: "/reportar", label: "Reportar", icon: Plus, primary: true },
+    { to: "/perfil", label: "Perfil", icon: User },
+  ];
 
 const hiddenOn = new Set(["/splash", "/onboarding", "/encuesta", "/reportar", "/alertas", "/perfil"]);
 

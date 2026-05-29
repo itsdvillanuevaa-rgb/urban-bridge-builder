@@ -33,17 +33,40 @@ export function calculateDistance(start: [number, number], end: [number, number]
   return parseFloat(distance.toFixed(2));
 }
 
-export function generateRouteGeometry(start: [number, number], end: [number, number]): [number, number][] {
+export function generateRouteGeometry(
+  start: [number, number],
+  end: [number, number],
+  routeIndex: number = 0
+): [number, number][] {
   const [lat1, lon1] = start;
   const [lat2, lon2] = end;
 
-  // Create a 4-point zig-zag path to simulate navigating city streets rather than a straight line
-  return [
-    [lat1, lon1],
-    [lat1 + (lat2 - lat1) * 0.35, lon1 + (lon2 - lon1) * 0.1],
-    [lat1 + (lat2 - lat1) * 0.7, lon1 + (lon2 - lon1) * 0.75],
-    [lat2, lon2],
-  ];
+  // Manhattan-style grid path to avoid crossing diagonal blocks and buildings:
+  // routeIndex 0: L-shape starting with latitude change, then longitude
+  // routeIndex 1: L-shape starting with longitude change, then latitude
+  // routeIndex 2: Staircase zig-zag: start -> mid-lat -> mid-lon -> end
+  if (routeIndex === 0) {
+    return [
+      [lat1, lon1],
+      [lat2, lon1],
+      [lat2, lon2],
+    ];
+  } else if (routeIndex === 1) {
+    return [
+      [lat1, lon1],
+      [lat1, lon2],
+      [lat2, lon2],
+    ];
+  } else {
+    const latMid = (lat1 + lat2) / 2;
+    const lonMid = (lon1 + lon2) / 2;
+    return [
+      [lat1, lon1],
+      [latMid, lon1],
+      [latMid, lon2],
+      [lat2, lon2],
+    ];
+  }
 }
 
 export interface OSRMRouteResult {
@@ -52,12 +75,51 @@ export interface OSRMRouteResult {
   durationMin: number;
 }
 
+async function fetchOSRMRouteWithWaypoints(
+  points: [number, number][]
+): Promise<OSRMRouteResult | null> {
+  const coordString = points.map((p) => `${p[1]},${p[0]}`).join(";");
+  try {
+    const response = await fetch(
+      `https://router.project-osrm.org/route/v1/foot/${coordString}?overview=full&geometries=geojson`,
+      {
+        headers: {
+          "User-Agent": "UrbanBridgeBuilder/1.0 (Accessibility Route Planner)",
+        },
+      }
+    );
+    if (!response.ok) return null;
+    const data = await response.json();
+    if (data.code !== "Ok" || !data.routes || data.routes.length === 0) return null;
+    const route = data.routes[0];
+    const geometry: [number, number][] = route.geometry.coordinates.map(
+      (c: [number, number]) => [c[1], c[0]] as [number, number]
+    );
+    const distanceKm = parseFloat((route.distance / 1000).toFixed(2));
+    const durationMin = Math.max(1, Math.round(route.duration / 60));
+    return { geometry, distanceKm, durationMin };
+  } catch {
+    return null;
+  }
+}
+
 export async function fetchOSRMRoutes(
   start: [number, number],
   end: [number, number]
 ): Promise<OSRMRouteResult[]> {
   const [latStart, lonStart] = start;
   const [latEnd, lonEnd] = end;
+
+  // Haversine fallback helper
+  const getFallbackRoute = (index: number): OSRMRouteResult => {
+    const dist = calculateDistance(start, end);
+    const geom = generateRouteGeometry(start, end, index);
+    return {
+      geometry: geom,
+      distanceKm: dist,
+      durationMin: Math.max(1, Math.round(dist * 12)),
+    };
+  };
 
   try {
     const response = await fetch(
@@ -79,31 +141,54 @@ export async function fetchOSRMRoutes(
       throw new Error(`OSRM returned no routes or invalid code: ${data.code}`);
     }
 
-    return data.routes.map((route: any) => {
+    // Map initial OSRM alternatives
+    const routes: OSRMRouteResult[] = data.routes.map((route: any) => {
       const geometry: [number, number][] = route.geometry.coordinates.map(
         (c: [number, number]) => [c[1], c[0]] as [number, number]
       );
       const distanceKm = parseFloat((route.distance / 1000).toFixed(2));
       const durationMin = Math.max(1, Math.round(route.duration / 60));
-      return {
-        geometry,
-        distanceKm,
-        durationMin,
-      };
+      return { geometry, distanceKm, durationMin };
     });
+
+    // If we have fewer than 3 routes, let's query detour routes using mathematical midpoints
+    if (routes.length < 3) {
+      const latDelta = latEnd - latStart;
+      const lonDelta = lonEnd - lonStart;
+
+      // Detour A: perpendicular offset to the "right" of midpoint
+      const detour1: [number, number] = [
+        latStart + latDelta * 0.5 + lonDelta * 0.15,
+        lonStart + lonDelta * 0.5 - latDelta * 0.15,
+      ];
+
+      // Detour B: perpendicular offset to the "left" of midpoint
+      const detour2: [number, number] = [
+        latStart + latDelta * 0.5 - lonDelta * 0.15,
+        lonStart + lonDelta * 0.5 + latDelta * 0.15,
+      ];
+
+      const [r1, r2] = await Promise.all([
+        fetchOSRMRouteWithWaypoints([start, detour1, end]),
+        fetchOSRMRouteWithWaypoints([start, detour2, end]),
+      ]);
+
+      if (r1) routes.push(r1);
+      if (routes.length < 3 && r2) routes.push(r2);
+    }
+
+    // Ensure we have exactly 3 unique routes
+    while (routes.length < 3) {
+      routes.push(getFallbackRoute(routes.length));
+    }
+
+    return routes.slice(0, 3);
   } catch (error) {
-    console.error("OSRM fetch failed, using fallback geometries:", error);
-    
-    // Fallback: direct Haversine distance and simulated grid path
-    const fallbackDist = calculateDistance(start, end);
-    const fallbackGeom = generateRouteGeometry(start, end);
-    
+    console.error("OSRM fetch failed, using fallback grid geometries:", error);
     return [
-      {
-        geometry: fallbackGeom,
-        distanceKm: fallbackDist,
-        durationMin: Math.max(1, Math.round(fallbackDist * 12)),
-      }
+      getFallbackRoute(0),
+      getFallbackRoute(1),
+      getFallbackRoute(2),
     ];
   }
 }
