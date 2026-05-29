@@ -9,6 +9,8 @@ interface MapCanvasProps {
   routeGeometry?: [number, number][] | null;
   recenterTrigger?: number;
   discoveryPoints?: AccessibilityPoint[];
+  alertPosition?: [number, number] | null;
+  alternativeRouteGeometry?: [number, number][] | null;
 }
 
 export function MapCanvas({
@@ -17,6 +19,8 @@ export function MapCanvas({
   routeGeometry,
   recenterTrigger,
   discoveryPoints,
+  alertPosition,
+  alternativeRouteGeometry,
 }: MapCanvasProps) {
   const [isClient, setIsClient] = useState(false);
 
@@ -39,6 +43,8 @@ export function MapCanvas({
             routeGeometry={routeGeometry}
             recenterTrigger={recenterTrigger}
             discoveryPoints={discoveryPoints}
+            alertPosition={alertPosition}
+            alternativeRouteGeometry={alternativeRouteGeometry}
           />
         </Suspense>
       ) : (

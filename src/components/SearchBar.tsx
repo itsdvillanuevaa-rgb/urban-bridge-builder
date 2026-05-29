@@ -16,7 +16,7 @@ export function SearchBar({
 }: SearchBarProps) {
   return (
     <div className="bg-card rounded-2xl ring-1 ring-border overflow-hidden">
-      <label className="flex items-center gap-3 px-4 h-14 border-b border-border">
+      <label className="flex items-center gap-3 px-4 h-14">
         <Circle className="size-4 text-muted-foreground" aria-hidden />
         <input
           type="text"

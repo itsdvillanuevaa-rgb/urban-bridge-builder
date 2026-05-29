@@ -5,6 +5,7 @@ import { BigButton } from "@/components/big-button";
 import { Camera, Check, Mic, MicOff } from "lucide-react";
 import type { ReportCategory } from "@/data/mock";
 import { addReport, generateReportId } from "@/data/storage";
+import { createReport } from "@/data/reports.supabase";
 
 // Type declaration for Web Speech API
 declare global {
@@ -31,12 +32,12 @@ export const Route = createFileRoute("/reportar")({
 });
 
 const categories: { id: ReportCategory; label: string; icon: string }[] = [
-  { id: "rampa-faltante", label: "Rampa faltante", icon: "♿" },
-  { id: "banqueta-rota", label: "Banqueta rota", icon: "⚠️" },
-  { id: "obstaculo", label: "Obstáculo", icon: "🚧" },
-  { id: "semaforo", label: "Semáforo", icon: "🚦" },
-  { id: "bano", label: "Baño accesible", icon: "🚻" },
-  { id: "otro", label: "Otro", icon: "📍" },
+  { id: "falta-rampa", label: "Falta de rampa", icon: "♿" },
+  { id: "banqueta-danada", label: "Banqueta dañada", icon: "⚠️" },
+  { id: "paso-obstruido", label: "Paso obstruido", icon: "🚧" },
+  { id: "cruce-peligroso", label: "Cruce peligroso", icon: "🚦" },
+  { id: "paso-estrecho", label: "Paso estrecho", icon: "�" },
+  { id: "otro-problema", label: "Otro problema", icon: "📍" },
 ];
 
 function ReportarPage() {
@@ -187,9 +188,10 @@ function ReportarPage() {
     }
   };
 
-  const handleSubmitReport = () => {
+  const handleSubmitReport = async () => {
     if (!cat) return;
 
+    // Build local report object
     const report = {
       id: generateReportId(),
       category: cat,
@@ -203,8 +205,39 @@ function ReportarPage() {
       status: "nuevo" as const,
     };
 
+    console.info("Guardando reporte local:", report);
     addReport(report);
+    console.info("Reporte guardado localmente");
+
+    // Show success screen immediately after local save
     setStep(3);
+
+    // Try to save to Supabase in the background (non-blocking)
+    try {
+      console.info("Intentando guardar reporte en Supabase");
+      const supabasePayload = {
+        category: cat,
+        description: description || "",
+        address: address || null,
+        lat: latitude,
+        lng: longitude,
+        severity: severity,
+        photo_url: photo || null,
+        status: "activo" as const,
+      };
+      console.info("Payload Supabase:", supabasePayload);
+
+      const result = await createReport(supabasePayload);
+
+      if (result) {
+        console.info("Reporte guardado en Supabase");
+      } else {
+        console.info("Error Supabase, manteniendo reporte local");
+      }
+    } catch (error) {
+      console.error("Error Supabase:", error);
+      console.info("Error Supabase, manteniendo reporte local");
+    }
   };
   return (
     <div className="min-h-dvh flex flex-col bg-background">

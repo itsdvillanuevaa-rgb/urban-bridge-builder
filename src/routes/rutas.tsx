@@ -11,7 +11,7 @@ import { useUserLocation } from "@/hooks/useUserLocation";
 import { LocationSuggestion } from "@/types/location";
 import { SearchHistoryEntry } from "@/types/accessibility";
 
-const CDMX_CENTER: [number, number] = [19.4326, -99.1332];
+const TIJUANA_CENTER: [number, number] = [32.5145, -117.0395];
 
 export const Route = createFileRoute("/rutas")({
   head: () => ({ meta: [{ title: "Buscar ruta accesible" }] }),
@@ -117,10 +117,11 @@ function RutasPage() {
     removeQuery(item);
   };
 
+
   const showDropdown = activeField !== null;
 
-  // Use locked/resolved origin coordinates state, falling back to CDMX
-  const activeOriginCoords: [number, number] = originCoords || CDMX_CENTER;
+  // Use locked/resolved origin coordinates state, falling back to Tijuana
+  const activeOriginCoords: [number, number] = originCoords || TIJUANA_CENTER;
 
   return (
     <div className="min-h-dvh flex flex-col bg-background pb-24">
@@ -140,6 +141,7 @@ function RutasPage() {
           onInputFocus={handleInputFocus}
         />
 
+
         {showDropdown && (
           <SearchSuggestions
             loading={loading}
@@ -154,9 +156,10 @@ function RutasPage() {
         )}
       </div>
 
+
       {/* Render map canvas with dynamic coordinates bounds fitting */}
       {selectedDestino && destinoCoords && (
-        <div className="relative h-64 rounded-3xl overflow-hidden ring-1 ring-border mx-4 mt-4 shadow-sm z-0">
+        <div className="relative h-80 rounded-3xl overflow-hidden ring-1 ring-border mx-4 mt-4 shadow-sm z-0">
           <MapCanvas
             userLocation={activeOriginCoords}
             routeGeometry={activeGeometry}

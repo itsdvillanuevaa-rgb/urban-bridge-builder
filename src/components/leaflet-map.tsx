@@ -4,7 +4,7 @@ import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { AccessibilityPoint } from "@/types/accessibility";
 
-const CDMX_CENTER: [number, number] = [19.4326, -99.1332];
+const TIJUANA_CENTER: [number, number] = [32.5149, -117.0382];
 
 
 
@@ -39,6 +39,13 @@ const poiIcons: Record<string, string> = {
   "sin-escaleras": "🚶",
   descanso: "🪑",
 };
+
+const alertIcon = L.divIcon({
+  className: "",
+  html: `<div style="width:40px;height:40px;border-radius:50%;background:#ef4444;color:white;box-shadow:0 4px 12px rgba(239,68,68,0.4);display:grid;place-items:center;font-size:20px;font-weight:bold;border:3px solid white;">🚧</div>`,
+  iconSize: [40, 40],
+  iconAnchor: [20, 20],
+});
 
 const poiColors: Record<string, string> = {
   baños: "var(--brand)",
@@ -105,6 +112,8 @@ export interface LeafletMapProps {
   routeGeometry?: [number, number][] | null;
   recenterTrigger?: number;
   discoveryPoints?: AccessibilityPoint[];
+  alertPosition?: [number, number] | null;
+  alternativeRouteGeometry?: [number, number][] | null;
 }
 
 export default function LeafletMap({
@@ -112,13 +121,15 @@ export default function LeafletMap({
   routeGeometry,
   recenterTrigger,
   discoveryPoints,
+  alertPosition,
+  alternativeRouteGeometry,
 }: LeafletMapProps) {
-  const mapCenter = userLocation || CDMX_CENTER;
+  const mapCenter = userLocation || TIJUANA_CENTER;
 
   return (
     <MapContainer
       center={mapCenter}
-      zoom={15}
+      zoom={16}
       scrollWheelZoom={true}
       zoomControl={false}
       attributionControl={false}
@@ -154,6 +165,31 @@ export default function LeafletMap({
             <Popup>Destino</Popup>
           </Marker>
         </>
+      )}
+
+      {/* Render alternative route polyline */}
+      {alternativeRouteGeometry && alternativeRouteGeometry.length > 0 && (
+        <Polyline
+          positions={alternativeRouteGeometry}
+          pathOptions={{
+            color: "#22c55e",
+            weight: 5,
+            dashArray: "12 4",
+            opacity: 0.7,
+          }}
+        />
+      )}
+
+      {/* Render alert marker */}
+      {alertPosition && (
+        <Marker position={alertPosition} icon={alertIcon}>
+          <Popup>
+            <div className="p-2">
+              <h4 className="font-bold text-sm">⚠️ Obra en la ruta</h4>
+              <p className="text-xs mt-1">Se recomienda tomar ruta alternativa</p>
+            </div>
+          </Popup>
+        </Marker>
       )}
 
       {/* Render nearby accessibility discovery points */}
