@@ -208,7 +208,7 @@ function ReportarPage() {
   };
   return (
     <div className="min-h-dvh flex flex-col bg-background">
-      <TopBar title={step === 3 ? "" : "Nuevo reporte"} back={step < 3} />
+      <TopBar title="" back={step < 3} />
 
       {/* Stepper */}
       {step < 3 && (
@@ -226,10 +226,10 @@ function ReportarPage() {
       )}
 
       {step === 1 && (
-        <div className="flex-1 flex flex-col justify-center px-5 pt-4 pb-8 safe-bottom">
-          <div className="text-center mb-4">
+        <div className="flex-1 flex flex-col justify-center px-5 pt-8 pb-8 safe-bottom">
+          <div className="text-center mb-8">
             <h2 className="text-2xl font-bold tracking-tight">¿Qué encontraste?</h2>
-            <p className="mt-1.5 text-base text-muted-foreground">Elige el tipo de barrera.</p>
+            <p className="mt-2 text-base text-muted-foreground">Elige el tipo de barrera.</p>
           </div>
           <div className="grid grid-cols-2 gap-4">
             {categories.map((c) => {
@@ -256,7 +256,7 @@ function ReportarPage() {
             })}
           </div>
 
-          <div className="mt-6">
+          <div className="mt-8">
             <BigButton onClick={() => setStep(2)} disabled={!cat}>
               Continuar
             </BigButton>
@@ -265,16 +265,10 @@ function ReportarPage() {
       )}
 
       {step === 2 && (
-        <div className="flex-1 flex flex-col justify-center px-6 pt-4 pb-8 safe-bottom overflow-y-auto">
+        <div className="flex-1 flex flex-col justify-center px-6 pt-6 pb-8 safe-bottom overflow-y-auto">
           <div className="flex-shrink-0">
-            <div className="text-center mb-4">
-              <h2 className="text-2xl font-bold tracking-tight">Confirma ubicación</h2>
-              <p className="mt-1 text-base text-muted-foreground">
-                Tu reporte se enviará desde aquí.
-              </p>
-            </div>
 
-            <div className="bg-card rounded-2xl ring-1 ring-border p-5 mb-4">
+            <div className="bg-card rounded-2xl ring-1 ring-border p-5 mb-5">
               <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2">Dirección</p>
               {addressLoading ? (
                 <>
@@ -313,7 +307,7 @@ function ReportarPage() {
               )}
             </div>
 
-            <div className="mb-4">
+            <div className="mb-5">
               <label className="block text-sm font-semibold mb-2">Descripción del reporte</label>
               <div className="relative">
                 <textarea
@@ -377,7 +371,7 @@ function ReportarPage() {
               )}
             </button>
 
-            <div className="mt-4">
+            <div className="mt-5">
               <label className="block text-sm font-semibold mb-2">Nivel de gravedad</label>
               <div className="grid grid-cols-3 gap-2">
                 {[
@@ -404,7 +398,7 @@ function ReportarPage() {
             </div>
           </div>
 
-          <div className="flex-shrink-0 mt-6">
+          <div className="flex-shrink-0 mt-8">
             <BigButton onClick={handleSubmitReport}>Enviar reporte</BigButton>
           </div>
         </div>
