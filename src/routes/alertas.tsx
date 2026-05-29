@@ -172,7 +172,7 @@ function AlertasPage() {
         })}
       </div>
 
-      <div className="px-4 pt-4 space-y-3 max-w-md mx-auto w-full">
+      <div className="px-4 pt-4 pb-4 space-y-3 max-w-md mx-auto w-full">
         {filteredAlerts.length > 0 ? (
           <>
             {filteredReports.map((r) => (
