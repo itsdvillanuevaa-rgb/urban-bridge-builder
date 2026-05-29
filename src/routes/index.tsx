@@ -30,7 +30,7 @@ function HomePage() {
   return (
     <div className="absolute inset-0 flex flex-col">
       {/* Map fills the screen */}
-      <div className="absolute inset-0 bottom-[260px]">
+      <div className="absolute inset-0 z-0">
         <MapCanvas />
       </div>
 
