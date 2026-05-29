@@ -28,4 +28,11 @@ export interface RouteSuggestion {
   warnings?: RouteWarning[];
   explanations?: string[];
   geometry?: [number, number][];
+  averageSlope?: number;
+  highestSlopeSegment?: number;
+  accessibleCrossings?: number;
+  nearbyBathrooms?: number;
+  nearbyRestAreas?: number;
+  surfaceQuality?: "excelente" | "buena" | "regular" | "mala";
+  sidewalkContinuity?: "alta" | "media" | "baja";
 }

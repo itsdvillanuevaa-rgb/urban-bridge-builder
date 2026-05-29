@@ -72,12 +72,6 @@ function MapUpdater({
   const lastGeometryRef = useRef<string>("");
 
   useEffect(() => {
-    if (!userLocation) {
-      hasCenteredRef.current = false;
-    }
-  }, [userLocation]);
-
-  useEffect(() => {
     if (userLocation) {
       const shouldCenter = !hasCenteredRef.current;
       if (shouldCenter && (!routeGeometry || routeGeometry.length === 0)) {

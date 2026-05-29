@@ -157,7 +157,7 @@ export async function discoverPlaces(
   // 1. Fetch from Nominatim
   let nominatimResults: LocationSuggestion[] = [];
   try {
-    nominatimResults = await searchLocations(query);
+    nominatimResults = await searchLocations(query, userCoords);
   } catch (err) {
     console.error("Nominatim search failed during discoverPlaces:", err);
   }
