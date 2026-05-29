@@ -2,8 +2,27 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState, useRef, useEffect } from "react";
 import { TopBar } from "@/components/top-bar";
 import { BigButton } from "@/components/big-button";
-import { Camera, Check } from "lucide-react";
+import { Camera, Check, Mic, MicOff } from "lucide-react";
 import type { ReportCategory } from "@/data/mock";
+
+// Type declaration for Web Speech API
+declare global {
+  interface Window {
+    SpeechRecognition: any;
+    webkitSpeechRecognition: any;
+  }
+}
+
+type SpeechRecognition = {
+  continuous: boolean;
+  interimResults: boolean;
+  lang: string;
+  start: () => void;
+  stop: () => void;
+  onresult: (event: any) => void;
+  onend: () => void;
+  onerror: (event: any) => void;
+};
 
 export const Route = createFileRoute("/reportar")({
   head: () => ({ meta: [{ title: "Reportar barrera" }] }),
@@ -28,8 +47,11 @@ function ReportarPage() {
   const [latitude, setLatitude] = useState<number | null>(null);
   const [longitude, setLongitude] = useState<number | null>(null);
   const [locationError, setLocationError] = useState<string | null>(null);
+  const [isRecording, setIsRecording] = useState(false);
+  const [supportsSpeechRecognition, setSupportsSpeechRecognition] = useState(false);
   const navigate = useNavigate();
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const recognitionRef = useRef<SpeechRecognition | null>(null);
 
   useEffect(() => {
     if (!navigator.geolocation) {
@@ -61,6 +83,37 @@ function ReportarPage() {
     );
   }, []);
 
+  useEffect(() => {
+    // Check if browser supports speech recognition
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (SpeechRecognition) {
+      setSupportsSpeechRecognition(true);
+      const recognition = new SpeechRecognition();
+      recognition.continuous = false;
+      recognition.interimResults = true;
+      recognition.lang = "es-ES";
+
+      recognition.onresult = (event: any) => {
+        const transcript = Array.from(event.results)
+          .map((result: any) => result[0])
+          .map((result) => result.transcript)
+          .join("");
+        setDescription(transcript);
+      };
+
+      recognition.onend = () => {
+        setIsRecording(false);
+      };
+
+      recognition.onerror = (event: any) => {
+        console.error("Speech recognition error:", event.error);
+        setIsRecording(false);
+      };
+
+      recognitionRef.current = recognition;
+    }
+  }, []);
+
   const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -74,6 +127,18 @@ function ReportarPage() {
 
   const handlePhotoClick = () => {
     fileInputRef.current?.click();
+  };
+
+  const toggleVoiceRecording = () => {
+    if (!recognitionRef.current) return;
+
+    if (isRecording) {
+      recognitionRef.current.stop();
+      setIsRecording(false);
+    } else {
+      recognitionRef.current.start();
+      setIsRecording(true);
+    }
   };
   return (
     <div className="min-h-dvh flex flex-col bg-background pb-24">
@@ -169,13 +234,36 @@ function ReportarPage() {
 
             <div className="mb-6">
               <label className="block text-sm font-semibold mb-2">Descripción del reporte</label>
-              <textarea
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                placeholder="Describe los detalles de la barrera..."
-                className="w-full min-h-24 p-4 rounded-2xl ring-1 ring-border bg-card text-base resize-none focus:outline-none focus:ring-2 focus:ring-brand"
-                rows={3}
-              />
+              <div className="relative">
+                <textarea
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  placeholder="Describe brevemente la barrera u obstáculo..."
+                  className="w-full min-h-24 p-4 pr-12 rounded-2xl ring-1 ring-border bg-card text-base resize-none focus:outline-none focus:ring-2 focus:ring-brand"
+                  rows={3}
+                />
+                {supportsSpeechRecognition && (
+                  <button
+                    type="button"
+                    onClick={toggleVoiceRecording}
+                    className={[
+                      "absolute right-3 top-3 p-2 rounded-full transition-all",
+                      isRecording
+                        ? "bg-destructive/10 text-destructive animate-pulse"
+                        : "bg-brand-soft text-brand hover:bg-brand/20",
+                    ].join(" ")}
+                    aria-label={isRecording ? "Detener grabación" : "Iniciar dictado por voz"}
+                  >
+                    {isRecording ? <MicOff className="size-5" /> : <Mic className="size-5" />}
+                  </button>
+                )}
+              </div>
+              {isRecording && (
+                <p className="mt-2 text-sm text-brand font-medium flex items-center gap-2">
+                  <span className="inline-block w-2 h-2 bg-brand rounded-full animate-pulse" />
+                  Escuchando…
+                </p>
+              )}
             </div>
 
             <input
