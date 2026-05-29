@@ -1,8 +1,8 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState, useEffect } from "react";
 import { TopBar } from "@/components/top-bar";
 import { AlertCard } from "@/components/alert-card";
-import { alerts, type Report } from "@/data/mock";
+import { alerts, type Report, type Alert } from "@/data/mock";
 import { getReports } from "@/data/storage";
 import { categoryMeta } from "@/data/mock";
 import { CheckCircle2, Clock, MapPin } from "lucide-react";
@@ -33,11 +33,23 @@ function timeAgo(isoString: string) {
 }
 
 function ReportCard({ report }: { report: Report }) {
+  const navigate = useNavigate();
   const meta = categoryMeta[report.category];
   const severityKey = report.severity as keyof typeof severityClass;
   
+  const handleClick = () => {
+    navigate({
+      to: "/alertas/$id",
+      params: { id: report.id },
+      search: { item: report },
+    });
+  };
+  
   return (
-    <article className="bg-card rounded-2xl ring-1 ring-border p-4 flex gap-3 items-start">
+    <article 
+      onClick={handleClick}
+      className="bg-card rounded-2xl ring-1 ring-border p-4 flex gap-3 items-start cursor-pointer active:scale-[0.98] transition-transform"
+    >
       <div
         className={[
           "size-12 shrink-0 rounded-2xl grid place-items-center text-xl ring-1",
@@ -74,6 +86,7 @@ function ReportCard({ report }: { report: Report }) {
 }
 
 function AlertasPage() {
+  const navigate = useNavigate();
   const [reports, setReports] = useState<Report[]>([]);
   const [selectedFilter, setSelectedFilter] = useState<string>("Todas");
 
@@ -154,7 +167,17 @@ function AlertasPage() {
               <ReportCard key={r.id} report={r} />
             ))}
             {filteredMockAlerts.map((a) => (
-              <AlertCard key={a.id} alert={a} />
+              <AlertCard 
+                key={a.id} 
+                alert={a} 
+                onClick={() => {
+                  navigate({
+                    to: "/alertas/$id",
+                    params: { id: a.id },
+                    search: { item: a },
+                  });
+                }}
+              />
             ))}
           </>
         ) : (

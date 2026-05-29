@@ -17,6 +17,7 @@ import { Route as OnboardingRouteImport } from './routes/onboarding'
 import { Route as EncuestaRouteImport } from './routes/encuesta'
 import { Route as AlertasRouteImport } from './routes/alertas'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AlertasIdRouteImport } from './routes/alertas.$id'
 
 const SplashRoute = SplashRouteImport.update({
   id: '/splash',
@@ -58,37 +59,45 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AlertasIdRoute = AlertasIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => AlertasRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/alertas': typeof AlertasRoute
+  '/alertas': typeof AlertasRouteWithChildren
   '/encuesta': typeof EncuestaRoute
   '/onboarding': typeof OnboardingRoute
   '/perfil': typeof PerfilRoute
   '/reportar': typeof ReportarRoute
   '/rutas': typeof RutasRoute
   '/splash': typeof SplashRoute
+  '/alertas/$id': typeof AlertasIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/alertas': typeof AlertasRoute
+  '/alertas': typeof AlertasRouteWithChildren
   '/encuesta': typeof EncuestaRoute
   '/onboarding': typeof OnboardingRoute
   '/perfil': typeof PerfilRoute
   '/reportar': typeof ReportarRoute
   '/rutas': typeof RutasRoute
   '/splash': typeof SplashRoute
+  '/alertas/$id': typeof AlertasIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/alertas': typeof AlertasRoute
+  '/alertas': typeof AlertasRouteWithChildren
   '/encuesta': typeof EncuestaRoute
   '/onboarding': typeof OnboardingRoute
   '/perfil': typeof PerfilRoute
   '/reportar': typeof ReportarRoute
   '/rutas': typeof RutasRoute
   '/splash': typeof SplashRoute
+  '/alertas/$id': typeof AlertasIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -101,6 +110,7 @@ export interface FileRouteTypes {
     | '/reportar'
     | '/rutas'
     | '/splash'
+    | '/alertas/$id'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -111,6 +121,7 @@ export interface FileRouteTypes {
     | '/reportar'
     | '/rutas'
     | '/splash'
+    | '/alertas/$id'
   id:
     | '__root__'
     | '/'
@@ -121,11 +132,12 @@ export interface FileRouteTypes {
     | '/reportar'
     | '/rutas'
     | '/splash'
+    | '/alertas/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  AlertasRoute: typeof AlertasRoute
+  AlertasRoute: typeof AlertasRouteWithChildren
   EncuestaRoute: typeof EncuestaRoute
   OnboardingRoute: typeof OnboardingRoute
   PerfilRoute: typeof PerfilRoute
@@ -192,12 +204,30 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/alertas/$id': {
+      id: '/alertas/$id'
+      path: '/$id'
+      fullPath: '/alertas/$id'
+      preLoaderRoute: typeof AlertasIdRouteImport
+      parentRoute: typeof AlertasRoute
+    }
   }
 }
 
+interface AlertasRouteChildren {
+  AlertasIdRoute: typeof AlertasIdRoute
+}
+
+const AlertasRouteChildren: AlertasRouteChildren = {
+  AlertasIdRoute: AlertasIdRoute,
+}
+
+const AlertasRouteWithChildren =
+  AlertasRoute._addFileChildren(AlertasRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  AlertasRoute: AlertasRoute,
+  AlertasRoute: AlertasRouteWithChildren,
   EncuestaRoute: EncuestaRoute,
   OnboardingRoute: OnboardingRoute,
   PerfilRoute: PerfilRoute,
