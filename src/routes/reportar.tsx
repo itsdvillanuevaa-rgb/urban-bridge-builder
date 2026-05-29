@@ -187,7 +187,7 @@ function ReportarPage() {
   };
   return (
     <div className="min-h-dvh flex flex-col bg-background">
-      <TopBar title={step === 3 ? "¡Listo!" : "Nuevo reporte"} back={step < 3} />
+      <TopBar title={step === 3 ? "" : "Nuevo reporte"} back={step < 3} />
 
       {/* Stepper */}
       {step < 3 && (
@@ -370,7 +370,7 @@ function ReportarPage() {
           </div>
           <h2 className="mt-6 text-3xl font-bold tracking-tight">¡Gracias!</h2>
           <p className="mt-3 text-base text-muted-foreground max-w-xs">
-            Tu reporte está siendo atendido<span className="font-bold text-brand">12 personas</span>{" "}
+            Tu reporte fue realizado con éxito.
           </p>
           <div className="mt-10 w-full space-y-3">
             <BigButton onClick={() => navigate({ to: "/" })}>Volver al mapa</BigButton>

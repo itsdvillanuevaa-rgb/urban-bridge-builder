@@ -13,7 +13,7 @@ export function TopBar({
 }) {
   const router = useRouter();
   return (
-    <header className="sticky top-0 z-30 bg-background/90 backdrop-blur-xl border-b border-border safe-top">
+    <header className="sticky top-0 z-30 bg-background/90 backdrop-blur-xl safe-top">
       <div className="flex items-center justify-between gap-3 px-4 h-14">
         <div className="flex items-center gap-2 min-w-0">
           {back && (
