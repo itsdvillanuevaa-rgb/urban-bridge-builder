@@ -1,5 +1,5 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { TopBar } from "@/components/top-bar";
 import { BigButton } from "@/components/big-button";
 import { MapCanvas } from "@/components/map-canvas";
@@ -23,9 +23,59 @@ const categories: { id: ReportCategory; label: string; icon: string }[] = [
 function ReportarPage() {
   const [step, setStep] = useState<1 | 2 | 3>(1);
   const [cat, setCat] = useState<ReportCategory | null>(null);
-  const [photo, setPhoto] = useState(false);
+  const [photo, setPhoto] = useState<string | null>(null);
+  const [description, setDescription] = useState("");
+  const [severity, setSeverity] = useState<"Baja" | "Media" | "Alta" | "Crítica">("Media");
+  const [latitude, setLatitude] = useState<number | null>(null);
+  const [longitude, setLongitude] = useState<number | null>(null);
+  const [locationError, setLocationError] = useState<string | null>(null);
   const navigate = useNavigate();
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
+  useEffect(() => {
+    if (!navigator.geolocation) {
+      setLocationError("Geolocalización no soportada en este navegador");
+      return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        setLatitude(position.coords.latitude);
+        setLongitude(position.coords.longitude);
+        setLocationError(null);
+      },
+      (error) => {
+        switch (error.code) {
+          case error.PERMISSION_DENIED:
+            setLocationError("Permiso de ubicación denegado");
+            break;
+          case error.POSITION_UNAVAILABLE:
+            setLocationError("Ubicación no disponible");
+            break;
+          case error.TIMEOUT:
+            setLocationError("Tiempo de espera agotado");
+            break;
+          default:
+            setLocationError("Error al obtener ubicación");
+        }
+      }
+    );
+  }, []);
+
+  const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setPhoto(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handlePhotoClick = () => {
+    fileInputRef.current?.click();
+  };
   return (
     <div className="min-h-dvh flex flex-col bg-background pb-24">
       <TopBar title={step === 3 ? "¡Listo!" : "Nuevo reporte"} back={step < 3} />
@@ -46,10 +96,12 @@ function ReportarPage() {
       )}
 
       {step === 1 && (
-        <div className="flex-1 px-6 pt-6">
-          <h2 className="text-2xl font-bold tracking-tight">¿Qué encontraste?</h2>
-          <p className="mt-1 text-base text-muted-foreground">Elige el tipo de barrera.</p>
-          <div className="mt-6 grid grid-cols-2 gap-3">
+        <div className="flex-1 flex flex-col px-5 pt-4">
+          <div className="text-center mb-5">
+            <h2 className="text-2xl font-bold tracking-tight">¿Qué encontraste?</h2>
+            <p className="mt-1.5 text-base text-muted-foreground">Elige el tipo de barrera.</p>
+          </div>
+          <div className="grid grid-cols-2 gap-4">
             {categories.map((c) => {
               const sel = cat === c.id;
               return (
@@ -59,7 +111,7 @@ function ReportarPage() {
                   onClick={() => setCat(c.id)}
                   aria-pressed={sel}
                   className={[
-                    "h-32 rounded-3xl ring-1 flex flex-col items-center justify-center gap-2 transition-all",
+                    "h-28 rounded-2xl ring-1 flex flex-col items-center justify-center gap-1.5 transition-all",
                     sel
                       ? "bg-brand-soft ring-brand text-brand"
                       : "bg-card ring-border text-foreground",
@@ -74,7 +126,7 @@ function ReportarPage() {
             })}
           </div>
 
-          <div className="mt-8">
+          <div className="mt-auto pt-6">
             <BigButton onClick={() => setStep(2)} disabled={!cat}>
               Continuar
             </BigButton>
@@ -99,16 +151,39 @@ function ReportarPage() {
           </div>
 
           <div className="bg-card rounded-2xl ring-1 ring-border p-4">
-            <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-              Dirección
-            </p>
-            <p className="mt-1 text-base font-semibold">Av. Juárez 30, Centro</p>
-            <p className="text-sm text-muted-foreground">Ciudad de México</p>
+            <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Dirección</p>
+            {latitude !== null && longitude !== null ? (
+              <>
+                <p className="mt-1 text-base font-semibold">
+                  Lat: {latitude.toFixed(6)}, Lon: {longitude.toFixed(6)}
+                </p>
+                <p className="text-sm text-muted-foreground">Ubicación actual detectada</p>
+              </>
+            ) : locationError ? (
+              <>
+                <p className="mt-1 text-base font-semibold">Av. Juárez 30, Centro</p>
+                <p className="text-sm text-muted-foreground">Ciudad de México</p>
+                <p className="mt-2 text-sm text-destructive">{locationError}</p>
+              </>
+            ) : (
+              <>
+                <p className="mt-1 text-base font-semibold">Av. Juárez 30, Centro</p>
+                <p className="text-sm text-muted-foreground">Ciudad de México</p>
+                <p className="mt-2 text-sm text-muted-foreground">Obteniendo ubicación...</p>
+              </>
+            )}
           </div>
 
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*"
+            onChange={handlePhotoChange}
+            className="hidden"
+          />
           <button
             type="button"
-            onClick={() => setPhoto(true)}
+            onClick={handlePhotoClick}
             className={[
               "w-full h-32 rounded-3xl ring-1 border-dashed flex flex-col items-center justify-center gap-2 transition-all",
               photo
@@ -150,7 +225,7 @@ function ReportarPage() {
               onClick={() => {
                 setStep(1);
                 setCat(null);
-                setPhoto(false);
+                setPhoto(null);
               }}
             >
               Hacer otro reporte
