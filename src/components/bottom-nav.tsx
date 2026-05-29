@@ -12,7 +12,7 @@ const items: {
   { to: "/perfil", label: "Perfil", icon: User },
 ];
 
-const hiddenOn = new Set(["/splash", "/onboarding", "/encuesta"]);
+const hiddenOn = new Set(["/splash", "/onboarding", "/encuesta", "/perfil"]);
 
 export function BottomNav() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
