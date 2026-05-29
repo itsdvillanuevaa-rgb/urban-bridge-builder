@@ -1,5 +1,5 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { TopBar } from "@/components/top-bar";
 import { BigButton } from "@/components/big-button";
 import { MapCanvas } from "@/components/map-canvas";
@@ -26,8 +26,41 @@ function ReportarPage() {
   const [photo, setPhoto] = useState<string | null>(null);
   const [description, setDescription] = useState("");
   const [severity, setSeverity] = useState<"Baja" | "Media" | "Alta" | "Crítica">("Media");
+  const [latitude, setLatitude] = useState<number | null>(null);
+  const [longitude, setLongitude] = useState<number | null>(null);
+  const [locationError, setLocationError] = useState<string | null>(null);
   const navigate = useNavigate();
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (!navigator.geolocation) {
+      setLocationError("Geolocalización no soportada en este navegador");
+      return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        setLatitude(position.coords.latitude);
+        setLongitude(position.coords.longitude);
+        setLocationError(null);
+      },
+      (error) => {
+        switch (error.code) {
+          case error.PERMISSION_DENIED:
+            setLocationError("Permiso de ubicación denegado");
+            break;
+          case error.POSITION_UNAVAILABLE:
+            setLocationError("Ubicación no disponible");
+            break;
+          case error.TIMEOUT:
+            setLocationError("Tiempo de espera agotado");
+            break;
+          default:
+            setLocationError("Error al obtener ubicación");
+        }
+      }
+    );
+  }, []);
 
   const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -114,8 +147,26 @@ function ReportarPage() {
 
           <div className="bg-card rounded-2xl ring-1 ring-border p-4">
             <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Dirección</p>
-            <p className="mt-1 text-base font-semibold">Av. Juárez 30, Centro</p>
-            <p className="text-sm text-muted-foreground">Ciudad de México</p>
+            {latitude !== null && longitude !== null ? (
+              <>
+                <p className="mt-1 text-base font-semibold">
+                  Lat: {latitude.toFixed(6)}, Lon: {longitude.toFixed(6)}
+                </p>
+                <p className="text-sm text-muted-foreground">Ubicación actual detectada</p>
+              </>
+            ) : locationError ? (
+              <>
+                <p className="mt-1 text-base font-semibold">Av. Juárez 30, Centro</p>
+                <p className="text-sm text-muted-foreground">Ciudad de México</p>
+                <p className="mt-2 text-sm text-destructive">{locationError}</p>
+              </>
+            ) : (
+              <>
+                <p className="mt-1 text-base font-semibold">Av. Juárez 30, Centro</p>
+                <p className="text-sm text-muted-foreground">Ciudad de México</p>
+                <p className="mt-2 text-sm text-muted-foreground">Obteniendo ubicación...</p>
+              </>
+            )}
           </div>
 
           <input
