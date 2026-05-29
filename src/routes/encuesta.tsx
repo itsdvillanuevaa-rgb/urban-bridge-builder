@@ -114,7 +114,9 @@ function EncuestaPage() {
                       <Check className="size-3" aria-hidden />
                     </span>
                   )}
-                  <span className="text-2xl" aria-hidden>{m.icon}</span>
+                  <span className="text-2xl" aria-hidden>
+                    {m.icon}
+                  </span>
                   <span className="text-sm font-semibold">{m.label}</span>
                 </button>
               );

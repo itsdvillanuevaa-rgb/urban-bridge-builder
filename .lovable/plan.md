@@ -1,4 +1,3 @@
-
 # Rediseño Mobile-First: Acento Accesible
 
 Convertir el prototipo en una app nativa para smartphone (iOS/Android style), enfocada en accesibilidad para adultos mayores y personas con discapacidad motriz. Se eliminan vistas desktop, dashboard administrativo y landing.
