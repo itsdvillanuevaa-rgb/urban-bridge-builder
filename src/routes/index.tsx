@@ -1,8 +1,9 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { MapCanvas } from "@/components/map-canvas";
-import { Search, Locate, SlidersHorizontal } from "lucide-react";
+import { Search, Locate, SlidersHorizontal, Bell } from "lucide-react";
 import { useUserLocation } from "@/hooks/useUserLocation";
+import { useHorizontalScroll } from "@/hooks/useHorizontalScroll";
 import { getNearbyAccessibilityPoints } from "@/services/nearbyAccessibilityService";
 import { AccessibilityPoint } from "@/types/accessibility";
 
@@ -29,6 +30,7 @@ function HomePage() {
 
   // Hook for tracking continuous real-time user location
   const { location: userCoords, error: gpsError } = useUserLocation();
+  const scrollProps = useHorizontalScroll();
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -103,6 +105,13 @@ function HomePage() {
             <Search className="size-5 text-muted-foreground shrink-0" aria-hidden />
             <span className="text-base text-muted-foreground truncate">¿A dónde vamos?</span>
           </Link>
+          <Link
+            to="/alertas"
+            className="size-14 shrink-0 rounded-2xl bg-card shadow-lg ring-1 ring-border grid place-items-center hover:bg-muted/50 transition-colors"
+            aria-label="Alertas"
+          >
+            <Bell className="size-5 text-foreground" aria-hidden />
+          </Link>
           <button
             type="button"
             aria-label="Filtros de accesibilidad"
@@ -112,7 +121,11 @@ function HomePage() {
           </button>
         </div>
 
-        <div className="flex gap-2 pointer-events-auto overflow-x-auto -mx-1 px-1 no-scrollbar">
+        <div
+          ref={scrollProps.ref}
+          onMouseDown={scrollProps.onMouseDown}
+          className="flex gap-2 pointer-events-auto overflow-x-auto -mx-4 px-4 py-1 no-scrollbar mask-fade"
+        >
           {chips.map((c) => {
             const active = selectedCategory === c.id;
             return (

@@ -6,41 +6,9 @@ import { AccessibilityPoint } from "@/types/accessibility";
 
 const CDMX_CENTER: [number, number] = [19.4326, -99.1332];
 
-const markers: {
-  position: [number, number];
-  title: string;
-  color: string;
-}[] = [
-  {
-    position: [19.4345, -99.1405],
-    title: "Obstáculo",
-    color: "var(--warning)",
-  },
-  {
-    position: [19.4298, -99.1285],
-    title: "Rampa verificada",
-    color: "var(--success)",
-  },
-  {
-    position: [19.436, -99.1375],
-    title: "Baño accesible",
-    color: "var(--success)",
-  },
-  {
-    position: [19.4285, -99.125],
-    title: "Banqueta rota",
-    color: "var(--destructive)",
-  },
-];
 
-function createCircleIcon(color: string, size: number) {
-  return L.divIcon({
-    className: "",
-    html: `<div style="width:${size}px;height:${size}px;border-radius:50%;background:${color};box-shadow:0 0 0 3px white, 0 2px 6px rgba(0,0,0,.3);"></div>`,
-    iconSize: [size, size],
-    iconAnchor: [size / 2, size / 2],
-  });
-}
+
+
 
 const originIcon = L.divIcon({
   className: "",
@@ -207,13 +175,7 @@ export default function LeafletMap({
           </Marker>
         ))}
 
-      {/* Renders barriers / accessible features (only if discovery mode is not active to reduce noise) */}
-      {(!discoveryPoints || discoveryPoints.length === 0) &&
-        markers.map((m) => (
-          <Marker key={m.title} position={m.position} icon={createCircleIcon(m.color, 16)}>
-            <Popup>{m.title}</Popup>
-          </Marker>
-        ))}
+
     </MapContainer>
   );
 }
