@@ -30,6 +30,19 @@ export type Alert = {
   verifications: number;
 };
 
+export type Report = {
+  id: string;
+  category: ReportCategory;
+  description: string;
+  address: string | null;
+  latitude: number | null;
+  longitude: number | null;
+  photo: string | null;
+  severity: "alta" | "media" | "baja";
+  createdAt: string;
+  status: "nuevo" | "pendiente";
+};
+
 export const alerts: Alert[] = [
   {
     id: "A-492",

@@ -1,5 +1,6 @@
 import { categoryMeta, type Alert } from "@/data/mock";
 import { CheckCircle2, Clock, MapPin } from "lucide-react";
+import type { ReactNode } from "react";
 
 const severityClass = {
   alta: "bg-destructive/10 text-destructive ring-destructive/20",
@@ -17,10 +18,16 @@ function distance(m: number) {
   return `${(m / 1000).toFixed(1)} km`;
 }
 
-export function AlertCard({ alert, compact = false }: { alert: Alert; compact?: boolean }) {
+export function AlertCard({ alert, compact = false, onClick }: { alert: Alert; compact?: boolean; onClick?: () => void }) {
   const meta = categoryMeta[alert.category];
   return (
-    <article className="bg-card rounded-2xl ring-1 ring-border p-4 flex gap-3 items-start">
+    <article 
+      onClick={onClick}
+      className={[
+        "bg-card rounded-2xl ring-1 ring-border p-4 flex gap-3 items-start",
+        onClick ? "cursor-pointer active:scale-[0.98] transition-transform" : ""
+      ].join(" ")}
+    >
       <div
         className={[
           "size-12 shrink-0 rounded-2xl grid place-items-center text-xl ring-1",
