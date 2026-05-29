@@ -132,7 +132,7 @@ function AlertasPage() {
   });
 
   return (
-    <div className="min-h-dvh flex flex-col bg-background">
+    <div className="h-full flex flex-col bg-background overflow-hidden">
       <div className="px-4 pt-4 pb-2">
         <button
           type="button"
@@ -172,31 +172,33 @@ function AlertasPage() {
         })}
       </div>
 
-      <div className="px-4 pt-4 pb-4 space-y-3 max-w-md mx-auto w-full">
-        {filteredAlerts.length > 0 ? (
-          <>
-            {filteredReports.map((r) => (
-              <ReportCard key={r.id} report={r} />
-            ))}
-            {filteredMockAlerts.map((a) => (
-              <AlertCard 
-                key={a.id} 
-                alert={a} 
-                onClick={() => {
-                  navigate({
-                    to: "/alertas/$id",
-                    params: { id: a.id },
-                    search: { item: a },
-                  });
-                }}
-              />
-            ))}
-          </>
-        ) : (
-          <div className="bg-card rounded-2xl ring-1 ring-border p-6 text-center text-sm text-muted-foreground">
-            No hay alertas con gravedad "{selectedFilter}" en la zona.
-          </div>
-        )}
+      <div className="flex-1 overflow-y-auto px-4 pt-4 pb-16 max-w-md mx-auto w-full">
+        <div className="space-y-3">
+          {filteredAlerts.length > 0 ? (
+            <>
+              {filteredReports.map((r) => (
+                <ReportCard key={r.id} report={r} />
+              ))}
+              {filteredMockAlerts.map((a) => (
+                <AlertCard 
+                  key={a.id} 
+                  alert={a} 
+                  onClick={() => {
+                    navigate({
+                      to: "/alertas/$id",
+                      params: { id: a.id },
+                      search: { item: a },
+                    });
+                  }}
+                />
+              ))}
+            </>
+          ) : (
+            <div className="bg-card rounded-2xl ring-1 ring-border p-6 text-center text-sm text-muted-foreground">
+              No hay alertas con gravedad "{selectedFilter}" en la zona.
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

@@ -2,14 +2,29 @@ import type { Report } from "./mock";
 
 const REPORTS_STORAGE_KEY = "urban_bridge_reports";
 
+// Mapping for old category values to new ones for backward compatibility
+const categoryMapping: Record<string, string> = {
+  "rampa-faltante": "falta-rampa",
+  "banqueta-rota": "banqueta-danada",
+  "obstaculo": "paso-obstruido",
+  "semaforo": "cruce-peligroso",
+  "bano": "paso-estrecho",
+  "otro": "otro-problema",
+};
+
+const normalizeCategory = (category: string): string => {
+  return categoryMapping[category] || category;
+};
+
 export const getReports = (): Report[] => {
   try {
     const stored = localStorage.getItem(REPORTS_STORAGE_KEY);
     if (!stored) return [];
     const reports = JSON.parse(stored);
-    // Add fallback for existing reports without severity
+    // Add fallback for existing reports without severity and normalize old categories
     return reports.map((report: any) => ({
       ...report,
+      category: normalizeCategory(report.category),
       severity: report.severity || "media",
     }));
   } catch (error) {

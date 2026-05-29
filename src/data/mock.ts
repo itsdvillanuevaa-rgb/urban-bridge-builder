@@ -1,21 +1,21 @@
 export type ReportCategory =
-  | "rampa-faltante"
-  | "banqueta-rota"
-  | "obstaculo"
-  | "semaforo"
-  | "bano"
-  | "otro";
+  | "falta-rampa"
+  | "banqueta-danada"
+  | "paso-obstruido"
+  | "cruce-peligroso"
+  | "paso-estrecho"
+  | "otro-problema";
 
 export const categoryMeta: Record<
   ReportCategory,
   { label: string; tone: "warning" | "success" | "muted" | "danger"; icon: string }
 > = {
-  "rampa-faltante": { label: "Rampa faltante", tone: "warning", icon: "♿" },
-  "banqueta-rota": { label: "Banqueta rota", tone: "danger", icon: "⚠️" },
-  obstaculo: { label: "Obstáculo", tone: "warning", icon: "🚧" },
-  semaforo: { label: "Semáforo", tone: "warning", icon: "🚦" },
-  bano: { label: "Baño accesible", tone: "success", icon: "🚻" },
-  otro: { label: "Otro", tone: "muted", icon: "📍" },
+  "falta-rampa": { label: "Falta de rampa", tone: "warning", icon: "♿" },
+  "banqueta-danada": { label: "Banqueta dañada", tone: "danger", icon: "⚠️" },
+  "paso-obstruido": { label: "Paso obstruido", tone: "warning", icon: "🚧" },
+  "cruce-peligroso": { label: "Cruce peligroso", tone: "warning", icon: "🚦" },
+  "paso-estrecho": { label: "Paso estrecho", tone: "warning", icon: "�" },
+  "otro-problema": { label: "Otro problema", tone: "muted", icon: "📍" },
 };
 
 export type Alert = {
@@ -46,7 +46,7 @@ export type Report = {
 export const alerts: Alert[] = [
   {
     id: "A-492",
-    category: "obstaculo",
+    category: "paso-obstruido",
     title: "Bloqueo total de rampa",
     location: "Av. Juárez esq. Madero",
     distanceM: 120,
@@ -57,7 +57,7 @@ export const alerts: Alert[] = [
   },
   {
     id: "A-491",
-    category: "rampa-faltante",
+    category: "falta-rampa",
     title: "Cruce sin rampa peatonal",
     location: "Calz. Tlalpan 1450",
     distanceM: 240,
@@ -68,7 +68,7 @@ export const alerts: Alert[] = [
   },
   {
     id: "A-490",
-    category: "banqueta-rota",
+    category: "banqueta-danada",
     title: "Banqueta levantada",
     location: "Reforma 222",
     distanceM: 380,
@@ -79,7 +79,7 @@ export const alerts: Alert[] = [
   },
   {
     id: "A-489",
-    category: "semaforo",
+    category: "cruce-peligroso",
     title: "Semáforo sin audio",
     location: "Insurgentes Sur 800",
     distanceM: 520,
@@ -90,8 +90,8 @@ export const alerts: Alert[] = [
   },
   {
     id: "A-488",
-    category: "bano",
-    title: "Baño accesible disponible",
+    category: "paso-estrecho",
+    title: "Paso estrecho en acceso",
     location: "Parque México",
     distanceM: 640,
     minutesAgo: 180,

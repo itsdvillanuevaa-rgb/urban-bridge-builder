@@ -31,12 +31,12 @@ export const Route = createFileRoute("/reportar")({
 });
 
 const categories: { id: ReportCategory; label: string; icon: string }[] = [
-  { id: "rampa-faltante", label: "Rampa faltante", icon: "♿" },
-  { id: "banqueta-rota", label: "Banqueta rota", icon: "⚠️" },
-  { id: "obstaculo", label: "Obstáculo", icon: "🚧" },
-  { id: "semaforo", label: "Semáforo", icon: "🚦" },
-  { id: "bano", label: "Baño accesible", icon: "🚻" },
-  { id: "otro", label: "Otro", icon: "📍" },
+  { id: "falta-rampa", label: "Falta de rampa", icon: "♿" },
+  { id: "banqueta-danada", label: "Banqueta dañada", icon: "⚠️" },
+  { id: "paso-obstruido", label: "Paso obstruido", icon: "🚧" },
+  { id: "cruce-peligroso", label: "Cruce peligroso", icon: "🚦" },
+  { id: "paso-estrecho", label: "Paso estrecho", icon: "�" },
+  { id: "otro-problema", label: "Otro problema", icon: "📍" },
 ];
 
 function ReportarPage() {
