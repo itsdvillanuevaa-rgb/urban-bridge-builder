@@ -12,7 +12,8 @@ export const Route = createFileRoute("/alertas")({
   component: AlertasPage,
 });
 
-const filters = ["Todas", "Alta", "Media", "Baja"];
+const filters = ["Todas", "Alta", "Media", "Baja"] as const;
+type FilterType = (typeof filters)[number];
 
 const severityClass = {
   "baja": "bg-success/10 text-success ring-success/30",
@@ -137,27 +138,30 @@ function AlertasPage() {
 
       <div className="px-4 pt-2">
         <p className="text-base text-muted-foreground">
-          <span className="font-bold text-foreground">{filteredAlerts.length}</span> alertas activas a menos
-          de 1 km
+          <span className="font-bold text-foreground">{filteredAlerts.length}</span>{" "}
+          alertas activas a menos de 1 km
         </p>
       </div>
 
       <div className="px-4 pt-4 flex gap-2 overflow-x-auto no-scrollbar">
-        {filters.map((f) => (
-          <button
-            key={f}
-            type="button"
-            onClick={() => setSelectedFilter(f)}
-            className={[
-              "h-10 px-4 rounded-full text-sm font-semibold whitespace-nowrap ring-1 transition-colors",
-              selectedFilter === f
-                ? "bg-foreground text-background ring-foreground"
-                : "bg-card text-foreground ring-border",
-            ].join(" ")}
-          >
-            {f}
-          </button>
-        ))}
+        {filters.map((f) => {
+          const active = selectedFilter === f;
+          return (
+            <button
+              key={f}
+              type="button"
+              onClick={() => setSelectedFilter(f)}
+              className={[
+                "h-10 px-4 rounded-full text-sm font-semibold whitespace-nowrap ring-1 transition-all cursor-pointer",
+                active
+                  ? "bg-foreground text-background ring-foreground scale-105"
+                  : "bg-card text-foreground ring-border hover:bg-muted",
+              ].join(" ")}
+            >
+              {f}
+            </button>
+          );
+        })}
       </div>
 
       <div className="px-4 pt-4 space-y-3">
@@ -181,8 +185,8 @@ function AlertasPage() {
             ))}
           </>
         ) : (
-          <div className="text-center py-12">
-            <p className="text-base text-muted-foreground">No hay alertas con este filtro.</p>
+          <div className="bg-card rounded-2xl ring-1 ring-border p-6 text-center text-sm text-muted-foreground">
+            No hay alertas con gravedad "{selectedFilter}" en la zona.
           </div>
         )}
       </div>

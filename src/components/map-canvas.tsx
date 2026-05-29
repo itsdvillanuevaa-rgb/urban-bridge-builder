@@ -1,8 +1,23 @@
 import { useEffect, useState, lazy, Suspense } from "react";
+import { AccessibilityPoint } from "@/types/accessibility";
 
 const LeafletMap = lazy(() => import("./leaflet-map"));
 
-export function MapCanvas({ className = "" }: { className?: string }) {
+interface MapCanvasProps {
+  className?: string;
+  userLocation?: [number, number] | null;
+  routeGeometry?: [number, number][] | null;
+  recenterTrigger?: number;
+  discoveryPoints?: AccessibilityPoint[];
+}
+
+export function MapCanvas({
+  className = "",
+  userLocation,
+  routeGeometry,
+  recenterTrigger,
+  discoveryPoints,
+}: MapCanvasProps) {
   const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
@@ -19,7 +34,12 @@ export function MapCanvas({ className = "" }: { className?: string }) {
             </div>
           }
         >
-          <LeafletMap />
+          <LeafletMap
+            userLocation={userLocation}
+            routeGeometry={routeGeometry}
+            recenterTrigger={recenterTrigger}
+            discoveryPoints={discoveryPoints}
+          />
         </Suspense>
       ) : (
         <div className="w-full h-full grid place-items-center text-muted-foreground">

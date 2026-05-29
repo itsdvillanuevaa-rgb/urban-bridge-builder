@@ -1,10 +1,13 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { MapCanvas } from "@/components/map-canvas";
-import { AlertCard } from "@/components/alert-card";
-import { BigButton } from "@/components/big-button";
-import { alerts } from "@/data/mock";
-import { Search, Locate, SlidersHorizontal, Route as RouteIcon } from "lucide-react";
+import { Search, Locate, SlidersHorizontal, Bell } from "lucide-react";
+import { useUserLocation } from "@/hooks/useUserLocation";
+import { useHorizontalScroll } from "@/hooks/useHorizontalScroll";
+import { getNearbyAccessibilityPoints } from "@/services/nearbyAccessibilityService";
+import { AccessibilityPoint } from "@/types/accessibility";
+
+const CDMX_CENTER: [number, number] = [19.4326, -99.1332];
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -21,21 +24,78 @@ export const Route = createFileRoute("/")({
 
 function HomePage() {
   const navigate = useNavigate();
+  const [recenterTrigger, setRecenterTrigger] = useState(0);
+  const [selectedCategory, setSelectedCategory] = useState<"rampas" | "sin-escaleras" | "baños" | "descanso" | null>(null);
+  const [discoveryPoints, setDiscoveryPoints] = useState<AccessibilityPoint[]>([]);
+
+  // Hook for tracking continuous real-time user location
+  const { location: userCoords, error: gpsError } = useUserLocation();
+  const scrollProps = useHorizontalScroll();
 
   useEffect(() => {
     if (typeof window === "undefined") return;
     if (!localStorage.getItem("aa.onboarded")) navigate({ to: "/splash" });
   }, [navigate]);
 
+  // Reactively fetch nearby accessibility discovery points when location or category changes
+  useEffect(() => {
+    if (!selectedCategory) {
+      setDiscoveryPoints([]);
+      return;
+    }
+
+    const lat = userCoords?.latitude ?? CDMX_CENTER[0];
+    const lon = userCoords?.longitude ?? CDMX_CENTER[1];
+
+    let isMounted = true;
+    getNearbyAccessibilityPoints(lat, lon, selectedCategory)
+      .then((points) => {
+        if (isMounted) {
+          setDiscoveryPoints(points);
+        }
+      })
+      .catch((err) => {
+        console.error("Error fetching nearby POIs:", err);
+      });
+
+    return () => {
+      isMounted = false;
+    };
+  }, [selectedCategory, userCoords]);
+
+  const userMapLocation: [number, number] | null = userCoords
+    ? [userCoords.latitude, userCoords.longitude]
+    : null;
+
+  const handleRecenter = () => {
+    setRecenterTrigger((prev) => prev + 1);
+  };
+
+  const chips = [
+    { label: "Rampas", id: "rampas" as const },
+    { label: "Sin escaleras", id: "sin-escaleras" as const },
+    { label: "Baños", id: "baños" as const },
+    { label: "Descanso", id: "descanso" as const },
+  ];
+
   return (
     <div className="absolute inset-0 flex flex-col">
-      {/* Map fills the screen */}
+      {/* Map fills the screen area completely */}
       <div className="absolute inset-0 z-0">
-        <MapCanvas />
+        <MapCanvas
+          userLocation={userMapLocation}
+          recenterTrigger={recenterTrigger}
+          discoveryPoints={discoveryPoints}
+        />
       </div>
 
-      {/* Top floating search */}
+      {/* Top floating search and Discovery filter chips */}
       <div className="relative z-10 px-4 pt-4 safe-top space-y-3 pointer-events-none">
+        {gpsError && (
+          <div className="pointer-events-auto bg-warning/90 backdrop-blur-md text-warning-foreground text-xs p-3 rounded-2xl border border-warning/20 shadow-md">
+            Aviso GPS: {gpsError}. Usando ubicación de simulación.
+          </div>
+        )}
         <div className="flex gap-2 pointer-events-auto">
           <Link
             to="/rutas"
@@ -44,6 +104,13 @@ function HomePage() {
           >
             <Search className="size-5 text-muted-foreground shrink-0" aria-hidden />
             <span className="text-base text-muted-foreground truncate">¿A dónde vamos?</span>
+          </Link>
+          <Link
+            to="/alertas"
+            className="size-14 shrink-0 rounded-2xl bg-card shadow-lg ring-1 ring-border grid place-items-center hover:bg-muted/50 transition-colors"
+            aria-label="Alertas"
+          >
+            <Bell className="size-5 text-foreground" aria-hidden />
           </Link>
           <button
             type="button"
@@ -54,65 +121,41 @@ function HomePage() {
           </button>
         </div>
 
-        <div className="flex gap-2 pointer-events-auto overflow-x-auto -mx-1 px-1 no-scrollbar">
-          {["Rampas", "Sin escaleras", "Baños", "Descanso"].map((c, i) => (
-            <button
-              key={c}
-              type="button"
-              className={[
-                "h-10 px-4 rounded-full text-sm font-semibold whitespace-nowrap shadow-sm ring-1",
-                i === 0
-                  ? "bg-brand text-brand-foreground ring-brand"
-                  : "bg-card text-foreground ring-border",
-              ].join(" ")}
-            >
-              {c}
-            </button>
-          ))}
+        <div
+          ref={scrollProps.ref}
+          onMouseDown={scrollProps.onMouseDown}
+          className="flex gap-2 pointer-events-auto overflow-x-auto -mx-4 px-4 py-1 no-scrollbar mask-fade"
+        >
+          {chips.map((c) => {
+            const active = selectedCategory === c.id;
+            return (
+              <button
+                key={c.id}
+                type="button"
+                onClick={() => setSelectedCategory(active ? null : c.id)}
+                className={[
+                  "h-10 px-4 rounded-full text-sm font-semibold whitespace-nowrap shadow-sm ring-1 transition-all",
+                  active
+                    ? "bg-brand text-brand-foreground ring-brand scale-105"
+                    : "bg-card text-foreground ring-border hover:bg-muted",
+                ].join(" ")}
+              >
+                {c.label}
+              </button>
+            );
+          })}
         </div>
       </div>
 
-      {/* Locate FAB */}
+      {/* Locate FAB repositioned just above the navigation bar */}
       <button
         type="button"
+        onClick={handleRecenter}
         aria-label="Centrar en mi ubicación"
-        className="absolute right-4 bottom-[280px] z-10 size-14 rounded-full bg-card shadow-xl ring-1 ring-border grid place-items-center"
+        className="absolute right-4 bottom-24 z-10 size-14 rounded-full bg-card shadow-xl ring-1 ring-border grid place-items-center active:scale-95 transition-transform"
       >
         <Locate className="size-6 text-brand" aria-hidden />
       </button>
-
-      {/* Floating bottom sheet (peek) */}
-      <div className="absolute left-0 right-0 bottom-[88px] z-10 bg-card rounded-t-3xl shadow-2xl ring-1 ring-border pb-2">
-        <div className="flex justify-center pt-2 pb-3">
-          <span className="h-1.5 w-12 rounded-full bg-muted-foreground/30" aria-hidden />
-        </div>
-        <div className="px-5 pb-3 flex items-center justify-between">
-          <div>
-            <h2 className="text-lg font-bold leading-tight">Cerca de ti</h2>
-            <p className="text-xs text-muted-foreground">
-              {alerts.length} alertas activas en tu zona
-            </p>
-          </div>
-          <Link to="/alertas" className="text-sm font-semibold text-brand">
-            Ver todas
-          </Link>
-        </div>
-
-        <div className="px-4 space-y-2 max-h-[160px] overflow-hidden">
-          {alerts.slice(0, 2).map((a) => (
-            <AlertCard key={a.id} alert={a} compact />
-          ))}
-        </div>
-
-        <div className="px-4 pt-3 pb-1">
-          <BigButton
-            onClick={() => navigate({ to: "/rutas" })}
-            icon={<RouteIcon className="size-5" />}
-          >
-            Buscar ruta accesible
-          </BigButton>
-        </div>
-      </div>
     </div>
   );
 }

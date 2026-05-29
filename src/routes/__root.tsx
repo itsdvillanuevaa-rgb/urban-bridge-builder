@@ -108,7 +108,7 @@ function RootComponent() {
   return (
     <QueryClientProvider client={queryClient}>
       <PhoneFrame>
-        <main className="min-h-full">
+        <main className="h-full w-full overflow-y-auto overflow-x-hidden">
           <Outlet />
         </main>
         <BottomNav />
