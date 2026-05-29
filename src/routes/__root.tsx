@@ -42,12 +42,18 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
         <p className="mt-2 text-base text-muted-foreground">Intenta de nuevo o regresa al mapa.</p>
         <div className="mt-6 flex flex-wrap justify-center gap-2">
           <button
-            onClick={() => { router.invalidate(); reset(); }}
+            onClick={() => {
+              router.invalidate();
+              reset();
+            }}
             className="h-12 px-6 rounded-2xl bg-brand text-brand-foreground font-semibold"
           >
             Reintentar
           </button>
-          <a href="/" className="h-12 px-6 grid place-items-center rounded-2xl bg-muted font-semibold">
+          <a
+            href="/"
+            className="h-12 px-6 grid place-items-center rounded-2xl bg-muted font-semibold"
+          >
             Ir al mapa
           </a>
         </div>

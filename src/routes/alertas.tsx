@@ -17,7 +17,8 @@ function AlertasPage() {
 
       <div className="px-4 pt-2">
         <p className="text-base text-muted-foreground">
-          <span className="font-bold text-foreground">{alerts.length}</span> alertas activas a menos de 1 km
+          <span className="font-bold text-foreground">{alerts.length}</span> alertas activas a menos
+          de 1 km
         </p>
       </div>
 

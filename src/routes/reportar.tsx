@@ -76,7 +76,6 @@ function ReportarPage() {
   const handlePhotoClick = () => {
     fileInputRef.current?.click();
   };
-
   return (
     <div className="min-h-dvh flex flex-col bg-background pb-24">
       <TopBar title={step === 3 ? "¡Listo!" : "Nuevo reporte"} back={step < 3} />
@@ -118,7 +117,9 @@ function ReportarPage() {
                       : "bg-card ring-border text-foreground",
                   ].join(" ")}
                 >
-                  <span className="text-3xl" aria-hidden>{c.icon}</span>
+                  <span className="text-3xl" aria-hidden>
+                    {c.icon}
+                  </span>
                   <span className="text-sm font-semibold text-center px-2">{c.label}</span>
                 </button>
               );
@@ -137,7 +138,9 @@ function ReportarPage() {
         <div className="flex-1 px-6 pt-6 space-y-6">
           <div>
             <h2 className="text-2xl font-bold tracking-tight">Confirma ubicación</h2>
-            <p className="mt-1 text-base text-muted-foreground">Tu reporte se enviará desde aquí.</p>
+            <p className="mt-1 text-base text-muted-foreground">
+              Tu reporte se enviará desde aquí.
+            </p>
           </div>
 
           <div className="relative h-48 rounded-3xl overflow-hidden ring-1 ring-border">
@@ -178,12 +181,11 @@ function ReportarPage() {
             onChange={handlePhotoChange}
             className="hidden"
           />
-
           <button
             type="button"
             onClick={handlePhotoClick}
             className={[
-              "w-full h-32 rounded-3xl ring-1 border-dashed flex flex-col items-center justify-center gap-2 transition-all overflow-hidden relative",
+              "w-full h-32 rounded-3xl ring-1 border-dashed flex flex-col items-center justify-center gap-2 transition-all",
               photo
                 ? "bg-success/10 ring-success border-success text-success"
                 : "bg-muted ring-border border text-muted-foreground",
@@ -191,15 +193,8 @@ function ReportarPage() {
           >
             {photo ? (
               <>
-                <img
-                  src={photo}
-                  alt="Vista previa"
-                  className="absolute inset-0 w-full h-full object-cover"
-                />
-                <div className="absolute inset-0 bg-black/30 flex flex-col items-center justify-center gap-2">
-                  <Check className="size-8 text-white" aria-hidden />
-                  <span className="text-sm font-semibold text-white">Foto añadida</span>
-                </div>
+                <Check className="size-8" aria-hidden />
+                <span className="text-sm font-semibold">Foto añadida</span>
               </>
             ) : (
               <>
@@ -208,42 +203,6 @@ function ReportarPage() {
               </>
             )}
           </button>
-
-          <div>
-            <label className="text-sm font-semibold">Descripción del problema</label>
-            <textarea
-              value={description}
-              onChange={(e) => setDescription(e.target.value.slice(0, 300))}
-              placeholder="Describe brevemente el obstáculo encontrado..."
-              maxLength={300}
-              className="mt-2 w-full h-24 rounded-2xl ring-1 ring-border bg-card p-3 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-brand"
-            />
-            <p className="mt-1 text-xs text-muted-foreground text-right">
-              {description.length}/300
-            </p>
-          </div>
-
-          <div>
-            <label className="text-sm font-semibold">Severidad</label>
-            <div className="mt-2 grid grid-cols-4 gap-2">
-              {(["Baja", "Media", "Alta", "Crítica"] as const).map((level) => (
-                <button
-                  key={level}
-                  type="button"
-                  onClick={() => setSeverity(level)}
-                  aria-pressed={severity === level}
-                  className={[
-                    "h-12 rounded-xl ring-1 text-sm font-semibold transition-all",
-                    severity === level
-                      ? "bg-brand ring-brand text-brand-foreground"
-                      : "bg-card ring-border text-foreground",
-                  ].join(" ")}
-                >
-                  {level}
-                </button>
-              ))}
-            </div>
-          </div>
 
           <BigButton onClick={() => setStep(3)}>Enviar reporte</BigButton>
         </div>
@@ -256,11 +215,19 @@ function ReportarPage() {
           </div>
           <h2 className="mt-6 text-3xl font-bold tracking-tight">¡Gracias!</h2>
           <p className="mt-3 text-base text-muted-foreground max-w-xs">
-            Tu reporte ayudará a más de <span className="font-bold text-brand">12 personas</span> hoy a moverse mejor.
+            Tu reporte ayudará a más de <span className="font-bold text-brand">12 personas</span>{" "}
+            hoy a moverse mejor.
           </p>
           <div className="mt-10 w-full space-y-3">
             <BigButton onClick={() => navigate({ to: "/" })}>Volver al mapa</BigButton>
-            <BigButton variant="ghost" onClick={() => { setStep(1); setCat(null); setPhoto(null); }}>
+            <BigButton
+              variant="ghost"
+              onClick={() => {
+                setStep(1);
+                setCat(null);
+                setPhoto(null);
+              }}
+            >
               Hacer otro reporte
             </BigButton>
           </div>
