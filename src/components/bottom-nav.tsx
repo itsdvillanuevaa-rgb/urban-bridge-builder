@@ -7,12 +7,18 @@ const items: {
   icon: typeof Map;
   primary?: boolean;
 }[] = [
-  { to: "/", label: "Mapa", icon: Map },
-  { to: "/reportar", label: "Reportar", icon: Plus, primary: true },
-  { to: "/perfil", label: "Perfil", icon: User },
-];
+    { to: "/", label: "Mapa", icon: Map },
+    { to: "/reportar", label: "Reportar", icon: Plus, primary: true },
+    { to: "/perfil", label: "Perfil", icon: User },
+  ];
 
-const hiddenOn = new Set(["/splash", "/onboarding", "/encuesta", "/reportar"]);
+const hiddenOn = new Set([
+  "/splash",
+  "/onboarding",
+  "/encuesta",
+  "/perfil",
+  "/reportar",
+]);
 
 export function BottomNav() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
