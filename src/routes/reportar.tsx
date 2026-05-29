@@ -65,7 +65,9 @@ function ReportarPage() {
                       : "bg-card ring-border text-foreground",
                   ].join(" ")}
                 >
-                  <span className="text-3xl" aria-hidden>{c.icon}</span>
+                  <span className="text-3xl" aria-hidden>
+                    {c.icon}
+                  </span>
                   <span className="text-sm font-semibold text-center px-2">{c.label}</span>
                 </button>
               );
@@ -84,7 +86,9 @@ function ReportarPage() {
         <div className="flex-1 px-6 pt-6 space-y-6">
           <div>
             <h2 className="text-2xl font-bold tracking-tight">Confirma ubicación</h2>
-            <p className="mt-1 text-base text-muted-foreground">Tu reporte se enviará desde aquí.</p>
+            <p className="mt-1 text-base text-muted-foreground">
+              Tu reporte se enviará desde aquí.
+            </p>
           </div>
 
           <div className="relative h-48 rounded-3xl overflow-hidden ring-1 ring-border">
@@ -95,7 +99,9 @@ function ReportarPage() {
           </div>
 
           <div className="bg-card rounded-2xl ring-1 ring-border p-4">
-            <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Dirección</p>
+            <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+              Dirección
+            </p>
             <p className="mt-1 text-base font-semibold">Av. Juárez 30, Centro</p>
             <p className="text-sm text-muted-foreground">Ciudad de México</p>
           </div>
@@ -134,11 +140,19 @@ function ReportarPage() {
           </div>
           <h2 className="mt-6 text-3xl font-bold tracking-tight">¡Gracias!</h2>
           <p className="mt-3 text-base text-muted-foreground max-w-xs">
-            Tu reporte ayudará a más de <span className="font-bold text-brand">12 personas</span> hoy a moverse mejor.
+            Tu reporte ayudará a más de <span className="font-bold text-brand">12 personas</span>{" "}
+            hoy a moverse mejor.
           </p>
           <div className="mt-10 w-full space-y-3">
             <BigButton onClick={() => navigate({ to: "/" })}>Volver al mapa</BigButton>
-            <BigButton variant="ghost" onClick={() => { setStep(1); setCat(null); setPhoto(false); }}>
+            <BigButton
+              variant="ghost"
+              onClick={() => {
+                setStep(1);
+                setCat(null);
+                setPhoto(false);
+              }}
+            >
               Hacer otro reporte
             </BigButton>
           </div>

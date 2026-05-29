@@ -12,9 +12,21 @@ export const Route = createFileRoute("/onboarding")({
 });
 
 const slides = [
-  { img: onb1, title: "Rutas que respetan tu paso", desc: "Recibe trayectos priorizando rampas, pendientes suaves y banquetas seguras." },
-  { img: onb2, title: "Reporta barreras en segundos", desc: "Toma una foto y ayuda a otras personas a evitar obstáculos en su camino." },
-  { img: onb3, title: "Comunidad que valida", desc: "Cada reporte es verificado por personas como tú. Juntos hacemos una ciudad accesible." },
+  {
+    img: onb1,
+    title: "Rutas que respetan tu paso",
+    desc: "Recibe trayectos priorizando rampas, pendientes suaves y banquetas seguras.",
+  },
+  {
+    img: onb2,
+    title: "Reporta barreras en segundos",
+    desc: "Toma una foto y ayuda a otras personas a evitar obstáculos en su camino.",
+  },
+  {
+    img: onb3,
+    title: "Comunidad que valida",
+    desc: "Cada reporte es verificado por personas como tú. Juntos hacemos una ciudad accesible.",
+  },
 ];
 
 function OnboardingPage() {
@@ -41,13 +53,22 @@ function OnboardingPage() {
       </div>
 
       <div className="flex-1 flex flex-col items-center justify-center px-8 text-center">
-        <div className="w-72 h-72 rounded-3xl overflow-hidden bg-muted mb-8 animate-fade-up" key={`img-${i}`}>
+        <div
+          className="w-72 h-72 rounded-3xl overflow-hidden bg-muted mb-8 animate-fade-up"
+          key={`img-${i}`}
+        >
           <img src={slide.img} alt="" className="w-full h-full object-cover" />
         </div>
-        <h2 className="text-3xl font-bold tracking-tight text-balance animate-fade-up" key={`t-${i}`}>
+        <h2
+          className="text-3xl font-bold tracking-tight text-balance animate-fade-up"
+          key={`t-${i}`}
+        >
           {slide.title}
         </h2>
-        <p className="mt-3 text-base text-muted-foreground text-balance max-w-xs animate-fade-up" key={`d-${i}`}>
+        <p
+          className="mt-3 text-base text-muted-foreground text-balance max-w-xs animate-fade-up"
+          key={`d-${i}`}
+        >
           {slide.desc}
         </p>
       </div>

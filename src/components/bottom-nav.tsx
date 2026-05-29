@@ -1,7 +1,12 @@
 import { Link, useRouterState } from "@tanstack/react-router";
 import { Map, Route as RouteIcon, Bell, User, Plus } from "lucide-react";
 
-const items: { to: "/" | "/rutas" | "/reportar" | "/alertas" | "/perfil"; label: string; icon: typeof Map; primary?: boolean }[] = [
+const items: {
+  to: "/" | "/rutas" | "/reportar" | "/alertas" | "/perfil";
+  label: string;
+  icon: typeof Map;
+  primary?: boolean;
+}[] = [
   { to: "/", label: "Mapa", icon: Map },
   { to: "/rutas", label: "Rutas", icon: RouteIcon },
   { to: "/reportar", label: "Reportar", icon: Plus, primary: true },

@@ -10,7 +10,10 @@ export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
       { title: "Mapa — Acento Accesible" },
-      { name: "description", content: "Mapa accesible en tiempo real con alertas validadas por la comunidad." },
+      {
+        name: "description",
+        content: "Mapa accesible en tiempo real con alertas validadas por la comunidad.",
+      },
     ],
   }),
   component: HomePage,
@@ -86,7 +89,9 @@ function HomePage() {
         <div className="px-5 pb-3 flex items-center justify-between">
           <div>
             <h2 className="text-lg font-bold leading-tight">Cerca de ti</h2>
-            <p className="text-xs text-muted-foreground">{alerts.length} alertas activas en tu zona</p>
+            <p className="text-xs text-muted-foreground">
+              {alerts.length} alertas activas en tu zona
+            </p>
           </div>
           <Link to="/alertas" className="text-sm font-semibold text-brand">
             Ver todas
@@ -100,7 +105,10 @@ function HomePage() {
         </div>
 
         <div className="px-4 pt-3 pb-1">
-          <BigButton onClick={() => navigate({ to: "/rutas" })} icon={<RouteIcon className="size-5" />}>
+          <BigButton
+            onClick={() => navigate({ to: "/rutas" })}
+            icon={<RouteIcon className="size-5" />}
+          >
             Buscar ruta accesible
           </BigButton>
         </div>

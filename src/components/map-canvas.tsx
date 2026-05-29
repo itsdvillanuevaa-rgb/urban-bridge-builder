@@ -45,10 +45,26 @@ export function MapCanvas({ className = "" }: { className?: string }) {
       </div>
 
       {/* Markers */}
-      <div className="absolute size-5 rounded-full bg-warning ring-4 ring-white shadow-lg animate-pulse-soft" style={{ top: "44%", left: "46%" }} title="Obstáculo" />
-      <div className="absolute size-4 rounded-full bg-success ring-3 ring-white shadow" style={{ top: "58%", left: "55%" }} title="Rampa verificada" />
-      <div className="absolute size-4 rounded-full bg-success ring-3 ring-white shadow" style={{ top: "30%", left: "38%" }} title="Baño accesible" />
-      <div className="absolute size-4 rounded-full bg-destructive ring-3 ring-white shadow animate-pulse-soft" style={{ top: "62%", left: "70%" }} title="Banqueta rota" />
+      <div
+        className="absolute size-5 rounded-full bg-warning ring-4 ring-white shadow-lg animate-pulse-soft"
+        style={{ top: "44%", left: "46%" }}
+        title="Obstáculo"
+      />
+      <div
+        className="absolute size-4 rounded-full bg-success ring-3 ring-white shadow"
+        style={{ top: "58%", left: "55%" }}
+        title="Rampa verificada"
+      />
+      <div
+        className="absolute size-4 rounded-full bg-success ring-3 ring-white shadow"
+        style={{ top: "30%", left: "38%" }}
+        title="Baño accesible"
+      />
+      <div
+        className="absolute size-4 rounded-full bg-destructive ring-3 ring-white shadow animate-pulse-soft"
+        style={{ top: "62%", left: "70%" }}
+        title="Banqueta rota"
+      />
     </div>
   );
 }
